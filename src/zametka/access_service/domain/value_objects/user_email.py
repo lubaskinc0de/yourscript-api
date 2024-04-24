@@ -13,13 +13,16 @@ from zametka.access_service.domain.exceptions.user_identity import InvalidUserEm
 class UserEmail(ValueObject[str]):
     value: str
 
-    def _validate(self) -> None:
-        if len(self.value) > 100:
-            raise InvalidUserEmailError("Слишком длинный e-mail!")
-        if len(self.value) < 6:
-            raise InvalidUserEmailError("Слишком короткий e-mail!")
+    MAX_LENGTH = 100
+    MIN_LENGTH = 6
 
-        invalid_email_exc = InvalidUserEmailError("Неправильный e-mail!")
+    def _validate(self) -> None:
+        if len(self.value) > self.MAX_LENGTH:
+            raise InvalidUserEmailError("Слишком длинный e-email!")
+        if len(self.value) < self.MIN_LENGTH:
+            raise InvalidUserEmailError("Слишком короткий e-email!")
+
+        invalid_email_exc = InvalidUserEmailError("Неправильный e-email!")
 
         if self.value.isspace():
             raise invalid_email_exc

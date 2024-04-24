@@ -8,8 +8,10 @@ from zametka.notes.domain.exceptions.note import InvalidNoteTitleError
 class NoteTitle(ValueObject[str]):
     value: str
 
+    MAX_LENGTH = 50
+
     def _validate(self) -> None:
-        if len(self.value) > 50:
+        if len(self.value) > self.MAX_LENGTH:
             raise InvalidNoteTitleError("Название заметки слишком длинное!")
         if not any(not x.isspace() for x in self.value):
             raise InvalidNoteTitleError(

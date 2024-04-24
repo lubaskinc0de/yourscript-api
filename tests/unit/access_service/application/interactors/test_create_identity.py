@@ -3,19 +3,19 @@ from uuid import uuid4
 import pytest
 
 from tests.mocks.access_service.user_identity_repository import (
-    FakeUserIdentityRepository,
+    FakeUserGateway,
 )
 from tests.mocks.access_service.uow import FakeUoW
 from tests.mocks.access_service.token_sender import FakeTokenSender
 
-from zametka.access_service.application.create_identity import (
-    CreateIdentity,
-    IdentityInputDTO,
+from zametka.access_service.application.create_user import (
+    CreateUser,
+    CreateUserInputDTO,
 )
-from zametka.access_service.application.dto import UserIdentityDTO
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.value_objects.user_email import UserEmail
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )
@@ -26,12 +26,12 @@ USER_ID = uuid4()
 
 
 @pytest.fixture
-def user_identity_repository() -> FakeUserIdentityRepository:
-    return FakeUserIdentityRepository(
-        UserIdentity(
+def user_gateway() -> FakeUserGateway:
+    return FakeUserGateway(
+        User.create_with_raw_password(
             email=UserEmail(USER_EMAIL),
             raw_password=UserRawPassword(USER_PASSWORD),
-            user_identity_id=UserIdentityId(USER_ID),
+            user_id=UserId(USER_ID),
         )
     )
 
@@ -46,18 +46,20 @@ def token_sender() -> FakeTokenSender:
     return FakeTokenSender()
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_create_identity(
-    user_identity_repository: FakeUserIdentityRepository,
-    uow: FakeUoW,
-    token_sender: FakeTokenSender,
+        user_gateway: FakeUserGateway,
+        uow: FakeUoW,
+        token_sender: FakeTokenSender,
 ) -> None:
-    interactor = CreateIdentity(
-        user_repository=user_identity_repository,
+    interactor = CreateUser(
+        user_gateway=user_gateway,
         uow=uow,
         token_sender=token_sender,
     )
 
-    dto = IdentityInputDTO(
+    dto = CreateUserInputDTO(
         email=USER_EMAIL,
         password=USER_PASSWORD,
     )
@@ -65,11 +67,11 @@ async def test_create_identity(
     result = await interactor(dto)
 
     assert result is not None
-    assert isinstance(result, UserIdentityDTO) is True
+    assert isinstance(result, UserDTO) is True
 
     assert uow.committed is True
 
-    assert user_identity_repository.created is True
-    assert result.identity_id == USER_ID
+    assert user_gateway.created is True
+    assert result.user_id == USER_ID
 
     assert token_sender.token_sent_cnt == 1

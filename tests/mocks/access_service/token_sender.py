@@ -1,8 +1,8 @@
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.domain.entities.confirmation_token import (
-    IdentityConfirmationToken,
+    UserConfirmationToken,
 )
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.domain.entities.user import User
 
 
 class FakeTokenSender(TokenSender):
@@ -10,6 +10,6 @@ class FakeTokenSender(TokenSender):
         self.token_sent_cnt = 0
 
     async def send(
-        self, confirmation_token: IdentityConfirmationToken, user: UserIdentity
+        self, confirmation_token: UserConfirmationToken, user: User
     ) -> None:
         self.token_sent_cnt += 1

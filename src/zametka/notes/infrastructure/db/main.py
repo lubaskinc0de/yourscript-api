@@ -38,6 +38,6 @@ async def get_async_sessionmaker(
         engine, expire_on_commit=False, class_=AsyncSession
     )
 
-    logging.info("Session factory was initialized")
+    logging.info("Session provider was initialized")
 
     return session_factory

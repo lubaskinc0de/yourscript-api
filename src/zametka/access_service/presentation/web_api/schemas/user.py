@@ -9,7 +9,7 @@ def email_validator(email: str) -> str:
     try:
         email_info = validate_email(email, check_deliverability=False)
     except EmailNotValidError:
-        raise InvalidUserEmailError("Неправильный e-mail!")
+        raise InvalidUserEmailError("Неправильный e-email!")
 
     email = email_info.original_email
 

@@ -18,10 +18,6 @@ from zametka.access_service.domain.exceptions.user_identity import (
     IsNotAuthorizedError,
 )
 
-from zametka.access_service.application.common.exceptions import (
-    EventIsNotDeliveredError,
-)
-
 
 async def unique_exception_handler(
     _request: Request, _exc: UniqueViolationError
@@ -123,11 +119,3 @@ async def authjwt_exception_handler(
         content={"detail": exc.message},
     )
 
-
-async def event_is_not_delivered_exception_handler(
-    _request: Request, exc: EventIsNotDeliveredError
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=401,
-        content=exc.detail,
-    )

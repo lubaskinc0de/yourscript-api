@@ -15,7 +15,7 @@ services:
             - ./src/zametka/notes/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/notes/infrastructure/persistence/alembic/migrations/versions
         depends_on:
             - access_service_migration
-            - notes_migration
+            # - notes_migration
 
     db:
         container_name: persistence
@@ -44,17 +44,17 @@ services:
                 condition: service_healthy
         command: [ "zametka", "access_service", "alembic", "upgrade", "head" ]
 
-    notes_migration:
-        container_name: notes_migration
-        build: .
-        restart: on-failure
-        env_file:
-            - .env.notes
-            - .env
-        depends_on:
-            db:
-                condition: service_healthy
-        command: [ "zametka", "notes", "alembic", "upgrade", "head" ]
+#    notes_migration:
+#        container_name: notes_migration
+#        build: .
+#        restart: on-failure
+#        env_file:
+#            - .env.notes
+#            - .env
+#        depends_on:
+#            db:
+#                condition: service_healthy
+#        command: [ "zametka", "notes", "alembic", "upgrade", "head" ]
 
 volumes:
     pg_data:

@@ -5,8 +5,8 @@ from zametka.notes.application.common.interactor import Interactor
 from zametka.notes.application.common.repository import UserRepository
 from zametka.notes.application.common.uow import UoW
 from zametka.notes.application.user.dto import UserDTO
+from zametka.notes.domain.entities.user import User
 
-from zametka.notes.domain.services.user_service import UserService
 from zametka.notes.domain.value_objects.user.user_first_name import UserFirstName
 from zametka.notes.domain.value_objects.user.user_last_name import UserLastName
 
@@ -23,20 +23,18 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         user_repository: UserRepository,
         id_provider: IdProvider,
         uow: UoW,
-        user_service: UserService,
     ):
         self.uow = uow
-        self.user_service = user_service
         self.id_provider = id_provider
         self.user_repository = user_repository
 
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
         first_name = UserFirstName(data.first_name)
         last_name = UserLastName(data.last_name)
-        identity_id = await self.id_provider.get_identity_id()
+        user_id = await self.id_provider.get_user_id()
 
-        user = self.user_service.create(
-            first_name=first_name, last_name=last_name, identity_id=identity_id
+        user = User(
+            first_name=first_name, last_name=last_name, user_id=user_id
         )
 
         user_dto = await self.user_repository.create(user)

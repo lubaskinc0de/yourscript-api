@@ -15,7 +15,7 @@ class GetUser(Interactor[None, UserDTO]):
         self.id_provider = id_provider
 
     async def __call__(self, data=None) -> UserDTO:  # type:ignore
-        user_id = await self.id_provider.get_identity_id()
+        user_id = await self.id_provider.get_user_id()
         user = await self.user_repository.get(user_id=user_id)
 
         if not user:

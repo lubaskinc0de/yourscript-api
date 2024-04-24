@@ -10,7 +10,6 @@ from zametka.notes.domain.exceptions.note import (
     NoteNotExistsError,
 )
 
-from zametka.notes.domain.services.note_service import NoteService
 from zametka.notes.domain.value_objects.note.note_id import NoteId
 
 from zametka.notes.application.note.dto import (
@@ -24,7 +23,7 @@ from zametka.notes.application.note.dto import (
 )
 from zametka.notes.domain.value_objects.note.note_text import NoteText
 from zametka.notes.domain.value_objects.note.note_title import NoteTitle
-from zametka.notes.domain.value_objects.user.user_identity_id import UserIdentityId
+from zametka.notes.domain.value_objects.user.user_id import UserId
 
 
 class NoteInteractor:
@@ -32,11 +31,9 @@ class NoteInteractor:
         self,
         note_repository: NoteRepository,
         uow: UoW,
-        note_service: NoteService,
         id_provider: IdProvider,
     ):
         self.uow = uow
-        self.note_service = note_service
         self.note_repository = note_repository
         self.id_provider = id_provider
 
@@ -60,20 +57,20 @@ class NoteInteractor:
 
         note: DBNote = await self._check_exists(note_id)
 
-        user_id: UserIdentityId = await self.id_provider.get_identity_id()
+        user_id: UserId = await self.id_provider.get_user_id()
 
-        if not self.note_service.has_access(note, user_id):
+        if not note.has_access(user_id):
             raise NoteAccessDeniedError()
 
         return note
 
     async def create(self, data: CreateNoteInputDTO) -> DBNoteDTO:
-        user_id: UserIdentityId = await self.id_provider.get_identity_id()
+        user_id: UserId = await self.id_provider.get_user_id()
 
         title = NoteTitle(data.title)
         text = NoteText(data.text) if data.text else None
 
-        note: Note = self.note_service.create(title, user_id, text)
+        note: Note = Note(title, user_id, text)
 
         note_dto = await self.note_repository.create(note)
         await self.uow.commit()
@@ -97,8 +94,8 @@ class NoteInteractor:
         title = NoteTitle(data.title)
         text = NoteText(data.text) if data.text else None
 
-        new_note: Note = self.note_service.create(title, note.author_id, text)
-        updated_note: DBNote = self.note_service.edit(note, new_note)
+        new_note: Note = Note(title, note.author_id, text)
+        updated_note: DBNote = note.merge(new_note)
 
         updated_db_note = await self.note_repository.update(
             NoteId(data.note_id), updated_note
@@ -112,7 +109,7 @@ class NoteInteractor:
         return updated_db_note
 
     async def list(self, data: ListNotesInputDTO) -> ListNotesDTO:
-        user_id: UserIdentityId = await self.id_provider.get_identity_id()
+        user_id: UserId = await self.id_provider.get_user_id()
 
         offset: int = data.offset
         limit: int = data.limit

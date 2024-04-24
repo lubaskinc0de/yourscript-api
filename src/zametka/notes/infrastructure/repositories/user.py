@@ -9,7 +9,7 @@ from zametka.notes.application.common.repository import (
 )
 
 from zametka.notes.domain.entities.user import User as UserEntity
-from zametka.notes.domain.value_objects.user.user_identity_id import UserIdentityId
+from zametka.notes.domain.value_objects.user.user_id import UserId
 
 from zametka.notes.infrastructure.db.models.user import User
 from zametka.notes.infrastructure.repositories.converters.user import (
@@ -36,7 +36,7 @@ class UserRepositoryImpl(UserRepository):
 
         return user_db_model_to_user_dto(db_user)
 
-    async def get(self, user_id: UserIdentityId) -> Optional[UserDTO]:
+    async def get(self, user_id: UserId) -> Optional[UserDTO]:
         q = select(User).where(User.identity_id == user_id.to_raw())
 
         res = await self.session.execute(q)

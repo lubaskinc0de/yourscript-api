@@ -6,7 +6,7 @@ from zametka.notes.application.user.dto import UserDTO
 from zametka.notes.domain.entities.note import Note, DBNote
 from zametka.notes.domain.entities.user import User
 from zametka.notes.domain.value_objects.note.note_id import NoteId
-from zametka.notes.domain.value_objects.user.user_identity_id import UserIdentityId
+from zametka.notes.domain.value_objects.user.user_id import UserId
 
 
 class NoteRepository(Protocol):
@@ -27,14 +27,12 @@ class NoteRepository(Protocol):
         """Update"""
 
     @abstractmethod
-    async def list(
-        self, limit: int, offset: int, author_id: UserIdentityId
-    ) -> ListNotesDTO:
+    async def list(self, limit: int, offset: int, author_id: UserId) -> ListNotesDTO:
         """List"""
 
     @abstractmethod
     async def search(
-        self, query: str, limit: int, offset: int, author_id: UserIdentityId
+        self, query: str, limit: int, offset: int, author_id: UserId
     ) -> ListNotesDTO:
         """FTS"""
 
@@ -51,5 +49,5 @@ class UserRepository(Protocol):
         """Create"""
 
     @abstractmethod
-    async def get(self, user_id: UserIdentityId) -> Optional[UserDTO]:
+    async def get(self, user_id: UserId) -> Optional[UserDTO]:
         """Get by id"""

@@ -3,22 +3,22 @@ from datetime import datetime, timedelta, timezone
 from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenIsExpiredError,
 )
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 
 EXPIRES_AFTER = timedelta(minutes=15)
 
 
-class IdentityConfirmationToken:
+class UserConfirmationToken:
     __slots__ = ("uid", "_expires_in")
 
-    def __init__(self, uid: UserIdentityId):
+    def __init__(self, uid: UserId):
         self.uid = uid
         self._expires_in = datetime.now(tz=timezone.utc) + EXPIRES_AFTER
 
     @classmethod
     def load(
-        cls, uid: UserIdentityId, timestamp: datetime
-    ) -> "IdentityConfirmationToken":
+        cls, uid: UserId, timestamp: datetime
+    ) -> "UserConfirmationToken":
         uid = uid
         expires_in = timestamp + EXPIRES_AFTER
 

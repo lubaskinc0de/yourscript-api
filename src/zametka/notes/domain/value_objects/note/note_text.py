@@ -8,8 +8,10 @@ from zametka.notes.domain.exceptions.note import InvalidNoteTextError
 class NoteText(ValueObject[str]):
     value: str
 
+    MAX_LENGTH = 60000
+
     def _validate(self) -> None:
-        if len(self.value) > 60000:
+        if len(self.value) > self.MAX_LENGTH:
             raise InvalidNoteTextError("Текст заметки слишком длинный!")
         if not self.value:
             raise InvalidNoteTextError("Текст заметки пуст!")

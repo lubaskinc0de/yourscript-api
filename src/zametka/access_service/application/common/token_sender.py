@@ -2,9 +2,9 @@ from abc import abstractmethod
 
 from typing import Protocol
 
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.entities.confirmation_token import (
-    IdentityConfirmationToken,
+    UserConfirmationToken,
 )
 
 
@@ -13,6 +13,6 @@ class TokenSender(Protocol):
 
     @abstractmethod
     async def send(
-        self, confirmation_token: IdentityConfirmationToken, user: UserIdentity
+        self, confirmation_token: UserConfirmationToken, user: User
     ) -> None:
         raise NotImplementedError

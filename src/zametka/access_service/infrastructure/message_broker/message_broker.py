@@ -3,12 +3,25 @@ import logging
 import aio_pika
 
 from aio_pika.abc import AbstractChannel
+from typing import Protocol
 
-from .interface import MessageBroker
 from .message import Message
 
 
-class MessageBrokerImpl(MessageBroker):
+class MessageBroker(Protocol):
+    async def publish_message(
+        self,
+        message: Message,
+        routing_key: str,
+        exchange_name: str,
+    ) -> None:
+        raise NotImplementedError
+
+    async def declare_exchange(self, exchange_name: str) -> None:
+        raise NotImplementedError
+
+
+class RMQMessageBroker(MessageBroker):
     def __init__(self, channel: AbstractChannel) -> None:
         self._channel = channel
 

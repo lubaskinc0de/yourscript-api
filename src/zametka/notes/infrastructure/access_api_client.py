@@ -3,7 +3,7 @@ import aiohttp
 from typing import Optional
 
 from zametka.notes.domain.exceptions.user import IsNotAuthorizedError
-from zametka.notes.domain.value_objects.user.user_identity_id import UserIdentityId
+from zametka.notes.domain.value_objects.user.user_id import UserId
 
 
 class AccessAPIClient:
@@ -23,14 +23,14 @@ class AccessAPIClient:
             "csrf_access_token": self.csrf_token,
         }
 
-    async def get_identity(self) -> UserIdentityId:
+    async def get_identity(self) -> UserId:
         async with self.session.get(
             "http://access_service/me/", cookies=self.get_access_cookies()
         ) as response:
             json = await response.json()
 
             if response.status == 200:
-                return UserIdentityId(json.get("identity_id"))
+                return UserId(json.get("identity_id"))
             else:
                 raise IsNotAuthorizedError()
 

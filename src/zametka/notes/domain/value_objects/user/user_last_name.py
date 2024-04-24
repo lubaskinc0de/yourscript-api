@@ -10,10 +10,13 @@ from zametka.notes.domain.exceptions.user import InvalidUserLastNameError
 class UserLastName(ValueObject[str]):
     value: str
 
+    MAX_LENGTH = 60
+    MIN_LENGTH = 2
+
     def _validate(self) -> None:
-        if len(self.value) > 60:
+        if len(self.value) > self.MAX_LENGTH:
             raise InvalidUserLastNameError("Фамилия пользователя слишком длинная!")
-        if len(self.value) < 2:
+        if len(self.value) < self.MIN_LENGTH:
             raise InvalidUserLastNameError("Фамилия пользователя слишком короткая!")
         if not self.value:
             raise InvalidUserLastNameError("Поле не может быть пустым!")

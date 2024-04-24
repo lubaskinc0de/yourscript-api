@@ -3,7 +3,7 @@ from uuid import uuid4
 import pytest
 
 from tests.mocks.access_service.user_identity_repository import (
-    FakeUserIdentityRepository,
+    FakeUserGateway,
 )
 from tests.mocks.access_service.token_sender import FakeTokenSender
 
@@ -11,8 +11,8 @@ from zametka.access_service.application.authorize import (
     Authorize,
     AuthorizeInputDTO,
 )
-from zametka.access_service.application.dto import UserIdentityDTO
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.user_identity import (
     UserIsNotActiveError,
     UserIsNotExistsError,
@@ -20,7 +20,7 @@ from zametka.access_service.domain.exceptions.user_identity import (
 )
 
 from zametka.access_service.domain.value_objects.user_email import UserEmail
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )
@@ -31,15 +31,15 @@ USER_ID = uuid4()
 
 
 @pytest.fixture
-def user_identity_repository() -> FakeUserIdentityRepository:
-    user = UserIdentity(
+def user_gateway() -> FakeUserGateway:
+    user = User.create_with_raw_password(
         email=UserEmail(USER_EMAIL),
         raw_password=UserRawPassword(USER_PASSWORD),
-        user_identity_id=UserIdentityId(USER_ID),
+        user_id=UserId(USER_ID),
     )
     user.is_active = True
 
-    return FakeUserIdentityRepository(
+    return FakeUserGateway(
         user,
     )
 
@@ -49,12 +49,14 @@ def token_sender() -> FakeTokenSender:
     return FakeTokenSender()
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_authorize(
-    user_identity_repository: FakeUserIdentityRepository,
-    token_sender: FakeTokenSender,
+        user_gateway: FakeUserGateway,
+        token_sender: FakeTokenSender,
 ) -> None:
     interactor = Authorize(
-        user_identity_repository,
+        user_gateway,
     )
 
     dto = AuthorizeInputDTO(
@@ -65,19 +67,21 @@ async def test_authorize(
     result = await interactor(dto)
 
     assert result is not None
-    assert isinstance(result, UserIdentityDTO) is True
+    assert isinstance(result, UserDTO) is True
 
-    assert result.identity_id == user_identity_repository.user.identity_id.to_raw()
+    assert result.user_id == user_gateway.user.user_id.to_raw()
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_authorize_not_active(
-    user_identity_repository: FakeUserIdentityRepository,
-    token_sender: FakeTokenSender,
+        user_gateway: FakeUserGateway,
+        token_sender: FakeTokenSender,
 ) -> None:
-    user_identity_repository.user.is_active = False
+    user_gateway.user.is_active = False
 
     interactor = Authorize(
-        user_identity_repository,
+        user_gateway,
     )
 
     dto = AuthorizeInputDTO(
@@ -89,17 +93,19 @@ async def test_authorize_not_active(
         await interactor(dto)
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_authorize_not_exists(
-    user_identity_repository: FakeUserIdentityRepository,
-    token_sender: FakeTokenSender,
+        user_gateway: FakeUserGateway,
+        token_sender: FakeTokenSender,
 ) -> None:
     async def fake_get(*_):
         return None
 
-    user_identity_repository.get_by_email = fake_get
+    user_gateway.get_by_email = fake_get
 
     interactor = Authorize(
-        user_identity_repository,
+        user_gateway,
     )
 
     dto = AuthorizeInputDTO(
@@ -111,12 +117,14 @@ async def test_authorize_not_exists(
         await interactor(dto)
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_authorize_bad_password(
-    user_identity_repository: FakeUserIdentityRepository,
-    token_sender: FakeTokenSender,
+        user_gateway: FakeUserGateway,
+        token_sender: FakeTokenSender,
 ) -> None:
     interactor = Authorize(
-        user_identity_repository,
+        user_gateway,
     )
 
     dto = AuthorizeInputDTO(

@@ -4,18 +4,18 @@ import pytest
 
 from tests.mocks.access_service.id_provider import FakeUserProvider
 from tests.mocks.access_service.user_identity_repository import (
-    FakeUserIdentityRepository,
+    FakeUserGateway,
 )
 
-from zametka.access_service.application.get_identity import (
-    GetIdentity,
+from zametka.access_service.application.get_user import (
+    GetUser,
 )
-from zametka.access_service.application.dto import UserIdentityDTO
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.user_identity import UserIsNotActiveError
 
 from zametka.access_service.domain.value_objects.user_email import UserEmail
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )
@@ -26,46 +26,49 @@ USER_ID = uuid4()
 
 
 @pytest.fixture
-def user_identity_repository() -> FakeUserIdentityRepository:
-    return FakeUserIdentityRepository(
-        UserIdentity(
+def user_gateway() -> FakeUserGateway:
+    return FakeUserGateway(
+        User.create_with_raw_password(
             email=UserEmail(USER_EMAIL),
             raw_password=UserRawPassword(USER_PASSWORD),
-            user_identity_id=UserIdentityId(USER_ID),
+            user_id=UserId(USER_ID),
         )
     )
 
 
 @pytest.fixture
 def user_provider(
-    user_identity_repository: FakeUserIdentityRepository,
+        user_gateway: FakeUserGateway,
 ) -> FakeUserProvider:
-    return FakeUserProvider(user_identity_repository.user)
+    return FakeUserProvider(user_gateway.user)
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_get_identity(
-    user_identity_repository: FakeUserIdentityRepository,
-    user_provider: FakeUserProvider,
+        user_gateway: FakeUserGateway,
+        user_provider: FakeUserProvider,
 ) -> None:
-    user_identity_repository.user.is_active = True
+    user_gateway.user.is_active = True
 
-    interactor = GetIdentity(
+    interactor = GetUser(
         user_provider=user_provider,
     )
 
     result = await interactor()
 
     assert result is not None
-    assert isinstance(result, UserIdentityDTO) is True
-    assert result.identity_id == USER_ID
+    assert isinstance(result, UserDTO) is True
+    assert result.user_id == USER_ID
     assert user_provider.requested is True
 
 
+@pytest.mark.access
+@pytest.mark.application
 async def test_get_identity_not_active(
-    user_identity_repository: FakeUserIdentityRepository,
-    user_provider: FakeUserProvider,
+        user_provider: FakeUserProvider,
 ) -> None:
-    interactor = GetIdentity(
+    interactor = GetUser(
         user_provider=user_provider,
     )
 

@@ -7,7 +7,7 @@ from zametka.notes.application.common.repository import NoteRepository
 from zametka.notes.application.note.dto import ListNotesDTO, DBNoteDTO
 from zametka.notes.domain.entities.note import Note as NoteEntity, DBNote
 from zametka.notes.domain.value_objects.note.note_id import NoteId
-from zametka.notes.domain.value_objects.user.user_identity_id import UserIdentityId
+from zametka.notes.domain.value_objects.user.user_id import UserId
 
 from zametka.notes.infrastructure.db.models.note import Note
 from zametka.notes.infrastructure.repositories.converters.note import (
@@ -82,9 +82,7 @@ class NoteRepositoryImpl(NoteRepository):
 
         return note_db_data_to_db_note_dto(note)
 
-    async def list(
-        self, limit: int, offset: int, author_id: UserIdentityId
-    ) -> ListNotesDTO:
+    async def list(self, limit: int, offset: int, author_id: UserId) -> ListNotesDTO:
         """List"""
 
         q = (
@@ -110,7 +108,7 @@ class NoteRepositoryImpl(NoteRepository):
         return ListNotesDTO(notes=notes, has_next=has_next)
 
     async def search(
-        self, query: str, limit: int, offset: int, author_id: UserIdentityId
+        self, query: str, limit: int, offset: int, author_id: UserId
     ) -> ListNotesDTO:
         """FTS"""
 

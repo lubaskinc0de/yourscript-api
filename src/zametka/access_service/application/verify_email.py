@@ -5,15 +5,15 @@ from typing import Optional
 from uuid import UUID
 
 from zametka.access_service.application.common.interactor import Interactor
-from zametka.access_service.application.common.repository import UserIdentityRepository
+from zametka.access_service.application.common.repository import UserGateway
 from zametka.access_service.application.common.uow import UoW
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.domain.entities.user import User
 
 from zametka.access_service.domain.entities.confirmation_token import (
-    IdentityConfirmationToken,
+    UserConfirmationToken,
 )
 from zametka.access_service.domain.exceptions.user_identity import UserIsNotExistsError
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 
 
 @dataclass(frozen=True)
@@ -25,24 +25,24 @@ class TokenInputDTO:
 class VerifyEmail(Interactor[TokenInputDTO, None]):
     def __init__(
         self,
-        user_repository: UserIdentityRepository,
+        user_gateway: UserGateway,
         uow: UoW,
     ):
         self.uow = uow
-        self.user_repository = user_repository
+        self.user_gateway = user_gateway
 
     async def __call__(self, data: TokenInputDTO) -> None:
-        user: Optional[UserIdentity] = await self.user_repository.get(
-            UserIdentityId(data.uid)
+        user: Optional[User] = await self.user_gateway.get(
+            UserId(data.uid)
         )
 
         if not user:
             raise UserIsNotExistsError()
 
-        token = IdentityConfirmationToken.load(user.identity_id, data.timestamp)
+        token = UserConfirmationToken.load(user.user_id, data.timestamp)
         user.activate(token)
 
-        await self.user_repository.update(user.identity_id, user)
+        await self.user_gateway.update(user.user_id, user)
         await self.uow.commit()
 
         return None

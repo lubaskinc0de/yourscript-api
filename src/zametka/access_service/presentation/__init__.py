@@ -19,10 +19,6 @@ from zametka.access_service.domain.exceptions.user_identity import (
     IsNotAuthorizedError,
 )
 
-from zametka.access_service.application.common.exceptions import (
-    EventIsNotDeliveredError,
-)
-
 from .web_api.endpoints import user
 
 from zametka.access_service.presentation.web_api.exception_handlers.auth import (
@@ -37,7 +33,6 @@ from zametka.access_service.presentation.web_api.exception_handlers.auth import 
     weak_password_exception_handler,
     invalid_encoded_token_exception_handler,
     is_not_authorized_exception_handler,
-    event_is_not_delivered_exception_handler,
 )
 
 
@@ -78,9 +73,6 @@ def include_exception_handlers(app: FastAPI) -> None:
         invalid_encoded_token_exception_handler,
     )
     app.add_exception_handler(IsNotAuthorizedError, is_not_authorized_exception_handler)
-    app.add_exception_handler(
-        EventIsNotDeliveredError, event_is_not_delivered_exception_handler
-    )
 
 
 __all__ = [

@@ -1,44 +1,44 @@
 from typing import Optional
 
-from zametka.access_service.application.common.repository import UserIdentityRepository
-from zametka.access_service.application.dto import UserIdentityDTO
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.application.common.repository import UserGateway
+from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.value_objects.user_email import UserEmail
-from zametka.access_service.domain.value_objects.user_identity_id import UserIdentityId
+from zametka.access_service.domain.value_objects.user_id import UserId
 
 
-class FakeUserIdentityRepository(UserIdentityRepository):
-    def __init__(self, user: UserIdentity):
+class FakeUserGateway(UserGateway):
+    def __init__(self, user: User):
         self.user = user
         self.created = False
         self.updated = False
         self.deleted = False
 
-    async def create(self, user: UserIdentity) -> UserIdentityDTO:
+    async def create(self, user: User) -> UserDTO:
         self.created = True
-        return UserIdentityDTO(
-            identity_id=self.user.identity_id.to_raw(),
+        return UserDTO(
+            user_id=self.user.user_id.to_raw(),
         )
 
-    async def get(self, user_id: UserIdentityId) -> Optional[UserIdentity]:
-        if not self.user.identity_id == user_id:
+    async def get(self, user_id: UserId) -> Optional[User]:
+        if not self.user.user_id == user_id:
             return None
 
         return self.user
 
-    async def get_by_email(self, email: UserEmail) -> Optional[UserIdentity]:
+    async def get_by_email(self, email: UserEmail) -> Optional[User]:
         if not self.user.email == email:
             return None
 
         return self.user
 
-    async def update(self, user_id: UserIdentityId, updated_user: UserIdentity) -> None:
+    async def update(self, user_id: UserId, updated_user: User) -> None:
         self.updated = True
 
         self.user.is_active = updated_user.is_active
         self.user.email = updated_user.email
         self.user.hashed_password = updated_user.hashed_password
-        self.user.identity_id = updated_user.identity_id
+        self.user.user_id = updated_user.user_id
 
-    async def delete(self, user_id: UserIdentityId) -> None:
+    async def delete(self, user_id: UserId) -> None:
         self.deleted = True

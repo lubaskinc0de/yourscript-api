@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from zametka.access_service.application.dto import UserIdentityDTO
+from zametka.access_service.application.dto import UserDTO
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.application.common.interactor import Interactor
 from zametka.access_service.application.common.repository import (
-    UserIdentityRepository,
+    UserGateway,
 )
 
-from zametka.access_service.domain.entities.user_identity import UserIdentity
+from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.user_identity import (
     UserIsNotExistsError,
 )
@@ -23,15 +23,15 @@ class AuthorizeInputDTO:
     password: str
 
 
-class Authorize(Interactor[AuthorizeInputDTO, UserIdentityDTO]):
+class Authorize(Interactor[AuthorizeInputDTO, UserDTO]):
     def __init__(
         self,
-        user_repository: UserIdentityRepository,
+        user_gateway: UserGateway,
     ):
-        self.user_repository = user_repository
+        self.user_gateway = user_gateway
 
-    async def __call__(self, data: AuthorizeInputDTO) -> UserIdentityDTO:
-        user: Optional[UserIdentity] = await self.user_repository.get_by_email(
+    async def __call__(self, data: AuthorizeInputDTO) -> UserDTO:
+        user: Optional[User] = await self.user_gateway.get_by_email(
             UserEmail(data.email)
         )
 
@@ -41,6 +41,6 @@ class Authorize(Interactor[AuthorizeInputDTO, UserIdentityDTO]):
         user.ensure_can_access()
         user.ensure_passwords_match(UserRawPassword(data.password))
 
-        return UserIdentityDTO(
-            identity_id=user.identity_id.to_raw(),
+        return UserDTO(
+            user_id=user.user_id.to_raw(),
         )
