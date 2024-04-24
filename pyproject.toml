@@ -37,10 +37,15 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    'access: tests related to access context.',
+    'notes: tests related to notes context.',
+    'domain: domain tests',
+    'application: application tests',
+]
 
 [project.scripts]
 zametka = "zametka.main.cli:main"
-
 
 [tool.setuptools]
 package-dir = {"" = "src"}
