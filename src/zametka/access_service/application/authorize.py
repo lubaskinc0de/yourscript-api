@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from zametka.access_service.application.dto import AccessTokenDTO
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import AccessTokenConfig
 from zametka.access_service.domain.value_objects.user_email import UserEmail
@@ -24,7 +25,7 @@ class AuthorizeInputDTO:
     password: str
 
 
-class Authorize(Interactor[AuthorizeInputDTO, AccessToken]):
+class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
     def __init__(
         self,
         user_gateway: UserGateway,
@@ -33,7 +34,7 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessToken]):
         self.user_gateway = user_gateway
         self.config = config
 
-    async def __call__(self, data: AuthorizeInputDTO) -> AccessToken:
+    async def __call__(self, data: AuthorizeInputDTO) -> AccessTokenDTO:
         user: Optional[User] = await self.user_gateway.get_by_email(
             UserEmail(data.email)
         )
@@ -46,4 +47,7 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessToken]):
 
         token = AccessToken(user.user_id, self.config)
 
-        return token
+        return AccessTokenDTO(
+            uid=token.uid.to_raw(),
+            expires_in=token.expires_in.to_raw(),
+        )

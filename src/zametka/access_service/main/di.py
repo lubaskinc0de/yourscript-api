@@ -24,7 +24,10 @@ from zametka.access_service.application.create_user import CreateUser
 from zametka.access_service.application.delete_user import DeleteUser
 from zametka.access_service.application.get_user import GetUser
 from zametka.access_service.application.verify_email import VerifyEmail
-from zametka.access_service.domain.entities.config import AccessTokenConfig
+from zametka.access_service.domain.entities.config import (
+    AccessTokenConfig,
+    UserConfirmationTokenConfig,
+)
 from zametka.access_service.infrastructure.email.aio_email_client import (
     AioSMTPEmailClient,
 )
@@ -39,6 +42,9 @@ from zametka.access_service.infrastructure.event_bus.event_emitter import (
 from zametka.access_service.infrastructure.id_provider import (
     TokenIdProvider,
     UserProviderImpl,
+)
+from zametka.access_service.infrastructure.jwt.access_token_processor import (
+    AccessTokenProcessor,
 )
 from zametka.access_service.infrastructure.jwt.config import JWTConfig
 from zametka.access_service.infrastructure.jwt.confirmation_token_processor import (
@@ -105,6 +111,7 @@ def infrastructure_provider() -> Provider:
     provider.provide(EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter)
     provider.provide(PyJWTProcessor, scope=Scope.APP, provides=JWTProcessor)
     provider.provide(ConfirmationTokenProcessor, scope=Scope.APP)
+    provider.provide(AccessTokenProcessor, scope=Scope.APP)
 
     return provider
 
@@ -126,6 +133,11 @@ def config_provider() -> Provider:
     provider.provide(
         lambda: config.access_token, scope=Scope.APP, provides=AccessTokenConfig
     )
+    provider.provide(
+        lambda: config.confirmation_token,
+        scope=Scope.APP,
+        provides=UserConfirmationTokenConfig,
+    )
 
     return provider
 
@@ -137,15 +149,15 @@ class HTTPProvider(Provider):
     def get_token_auth(
         self,
         request: Request,
-        jwt_processor: JWTProcessor,
+        token_processor: AccessTokenProcessor,
         token_auth_config: TokenAuthConfig,
         access_token_config: AccessTokenConfig,
     ) -> TokenAuth:
         token_auth = TokenAuth(
-            request,
-            jwt_processor,
+            req=request,
             access_token_config=access_token_config,
             config=token_auth_config,
+            token_processor=token_processor,
         )
 
         return token_auth

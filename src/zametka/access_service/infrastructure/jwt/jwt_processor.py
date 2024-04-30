@@ -1,5 +1,3 @@
-import logging
-
 import jwt
 
 from typing import Protocol, TypeAlias, Any

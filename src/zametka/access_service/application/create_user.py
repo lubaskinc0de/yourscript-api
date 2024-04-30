@@ -6,7 +6,8 @@ from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.common.interactor import Interactor
 from zametka.access_service.application.common.repository import UserGateway
 from zametka.access_service.application.common.uow import UoW
-from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.application.dto import UserDTO, UserConfirmationTokenDTO
+from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
@@ -30,10 +31,12 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         user_gateway: UserGateway,
         token_sender: TokenSender,
         uow: UoW,
+        config: UserConfirmationTokenConfig,
     ):
         self.uow = uow
         self.token_sender = token_sender
         self.user_gateway = user_gateway
+        self.config = config
 
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
         email = UserEmail(data.email)
@@ -49,9 +52,13 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         user_dto = await self.user_gateway.create(user)
         await self.uow.commit()
 
-        token: UserConfirmationToken = UserConfirmationToken(user.user_id)
+        token = UserConfirmationToken(user.user_id, self.config)
+        token_dto = UserConfirmationTokenDTO(
+            uid=token.uid.to_raw(),
+            expires_in=token.expires_in.to_raw(),
+        )
 
-        await self.token_sender.send(token, user)
+        await self.token_sender.send(token_dto, user)
 
         logging.info("Uid=%s created.", str(user_id.to_raw()))
 

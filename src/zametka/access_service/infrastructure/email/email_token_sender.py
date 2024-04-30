@@ -6,9 +6,8 @@ from email.mime.text import MIMEText
 from jinja2 import Environment
 
 from zametka.access_service.application.common.token_sender import TokenSender
-from zametka.access_service.domain.entities.confirmation_token import (
-    UserConfirmationToken,
-)
+from zametka.access_service.application.dto import UserConfirmationTokenDTO
+
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.infrastructure.email.config import ActivationEmailConfig
 from zametka.access_service.infrastructure.email.email_client import EmailClient
@@ -30,18 +29,17 @@ class EmailTokenSender(TokenSender):
         self.config = config
         self.token_processor = token_processor
 
-    def _render_html(self, token: UserConfirmationToken) -> str:
+    def _render_html(self, token: UserConfirmationTokenDTO) -> str:
         template = self.jinja.get_template(self.config.template_name)
         jwt_token = self.token_processor.encode(token)
 
-        logging.info(jwt_token)
         rendered: str = template.render(
             token_link=self.config.activation_url.format(jwt_token)
         )
 
         return rendered
 
-    async def send(self, token: UserConfirmationToken, user: User) -> None:
+    async def send(self, token: UserConfirmationTokenDTO, user: User) -> None:
         html = self._render_html(token)
         message = MIMEMultipart("alternative")
 

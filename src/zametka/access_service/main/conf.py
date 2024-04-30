@@ -6,7 +6,10 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any
 
-from zametka.access_service.domain.entities.config import AccessTokenConfig
+from zametka.access_service.domain.entities.config import (
+    AccessTokenConfig,
+    UserConfirmationTokenConfig,
+)
 from zametka.access_service.infrastructure.email.config import (
     SMTPConfig,
     ActivationEmailConfig,
@@ -31,6 +34,7 @@ class AllConfig:
     jwt: JWTConfig
     token_auth: TokenAuthConfig
     access_token: AccessTokenConfig
+    confirmation_token: UserConfirmationTokenConfig
 
 
 def load_all_config() -> AllConfig:
@@ -65,6 +69,9 @@ def load_all_config() -> AllConfig:
         jwt_token_key = cfg["auth"]["auth-token-key"]
 
         access_token_expires_after = cfg["security"]["access-token-expires-minutes"]
+        confirmation_token_expires_after = cfg["security"][
+            "confirmation-token-expires-minutes"
+        ]
     except KeyError:
         logging.fatal("On startup: Error reading config %s", cfg_path)
         raise
@@ -93,6 +100,10 @@ def load_all_config() -> AllConfig:
         expires_after=timedelta(minutes=access_token_expires_after)
     )
 
+    confirmation_token = UserConfirmationTokenConfig(
+        expires_after=timedelta(minutes=confirmation_token_expires_after)
+    )
+
     logging.info("Config loaded.")
 
     return AllConfig(
@@ -103,4 +114,5 @@ def load_all_config() -> AllConfig:
         jwt=jwt,
         token_auth=token_auth,
         access_token=access_token,
+        confirmation_token=confirmation_token,
     )

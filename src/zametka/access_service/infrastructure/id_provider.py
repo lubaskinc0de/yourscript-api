@@ -24,6 +24,7 @@ class TokenIdProvider(IdProvider):
         if self._user_id:
             return self._user_id
 
+        self._token.verify()
         user_id = self._token.uid
         self._user_id = user_id
 

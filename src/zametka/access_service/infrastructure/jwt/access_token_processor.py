@@ -1,10 +1,8 @@
 from datetime import timezone, datetime
 from uuid import UUID
 
-from zametka.access_service.application.dto import UserConfirmationTokenDTO
-from zametka.access_service.domain.exceptions.confirmation_token import (
-    CorruptedConfirmationTokenError,
-)
+from zametka.access_service.application.dto import AccessTokenDTO
+from zametka.access_service.domain.exceptions.access_token import UnauthorizedError
 
 from zametka.access_service.infrastructure.jwt.jwt_processor import (
     JWTToken,
@@ -13,11 +11,11 @@ from zametka.access_service.infrastructure.jwt.jwt_processor import (
 )
 
 
-class ConfirmationTokenProcessor:
+class AccessTokenProcessor:
     def __init__(self, jwt_processor: JWTProcessor):
         self.jwt_processor = jwt_processor
 
-    def encode(self, token: UserConfirmationTokenDTO) -> JWTToken:
+    def encode(self, token: AccessTokenDTO) -> JWTToken:
         jwt_token_payload = {
             "sub": str(token.uid),
             "exp": token.expires_in,
@@ -26,13 +24,13 @@ class ConfirmationTokenProcessor:
 
         return jwt_token
 
-    def decode(self, token: JWTToken) -> UserConfirmationTokenDTO:
+    def decode(self, token: JWTToken) -> AccessTokenDTO:
         try:
             payload = self.jwt_processor.decode(token)
             uid = UUID(payload["sub"])
             expires_in = datetime.fromtimestamp(float(payload["exp"]), timezone.utc)
 
-            token = UserConfirmationTokenDTO(uid=uid, expires_in=expires_in)
+            token = AccessTokenDTO(uid=uid, expires_in=expires_in)
             return token
         except (JWTDecodeError, ValueError, TypeError, KeyError) as exc:
-            raise CorruptedConfirmationTokenError from exc
+            raise UnauthorizedError from exc

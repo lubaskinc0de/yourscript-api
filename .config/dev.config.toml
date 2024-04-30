@@ -15,6 +15,7 @@ port = 465
 [security]
 algorithm = 'HS256'
 access-token-expires-minutes = 15
+confirmation-token-expires-minutes = 5
 access-cookie-expires-days = 15
 
 [auth]

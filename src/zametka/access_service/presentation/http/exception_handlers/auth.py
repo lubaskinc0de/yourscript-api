@@ -1,5 +1,3 @@
-import logging
-
 import jwt
 
 from asyncpg import UniqueViolationError
