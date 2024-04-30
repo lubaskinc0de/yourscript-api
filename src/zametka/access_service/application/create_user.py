@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from uuid import uuid4
 
@@ -51,5 +52,7 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         token: UserConfirmationToken = UserConfirmationToken(user.user_id)
 
         await self.token_sender.send(token, user)
+
+        logging.info("Uid=%s created.", str(user_id.to_raw()))
 
         return user_dto

@@ -1,21 +1,22 @@
 from dishka import FromDishka
-from dishka.integrations.fastapi import inject
+from dishka.integrations.fastapi import DishkaRoute
 
-from fastapi import APIRouter, Depends
-from fastapi_another_jwt_auth import AuthJWT
+from fastapi import APIRouter
 
 from zametka.access_service.application.authorize import Authorize
 from zametka.access_service.application.create_user import CreateUser
-from zametka.access_service.application.delete_user import DeleteUser
 from zametka.access_service.application.get_user import GetUser
 from zametka.access_service.application.verify_email import VerifyEmail
 
 from zametka.access_service.application.dto import UserDTO
-from zametka.access_service.application.verify_email import TokenInputDTO
 from zametka.access_service.application.authorize import AuthorizeInputDTO
 from zametka.access_service.application.create_user import CreateUserInputDTO
+from zametka.access_service.infrastructure.jwt.confirmation_token_processor import (
+    ConfirmationTokenProcessor,
+)
+from zametka.access_service.infrastructure.jwt.jwt_processor import JWTToken
 
-from zametka.access_service.presentation.web_api.schemas.user import (
+from zametka.access_service.presentation.http.schemas.user import (
     AuthorizeSchema,
     CreateIdentitySchema,
 )
@@ -23,17 +24,17 @@ from zametka.access_service.presentation.web_api.schemas.user import (
 router = APIRouter(
     prefix="/access",
     tags=["access"],
-    responses={404: {"description": "Not found"}},
+    responses={404: {"description": "Не найдено"}},
+    route_class=DishkaRoute,
 )
 
 
 @router.post("/")
-@inject
 async def create_identity(
     data: CreateIdentitySchema,
-    interactor: FromDishka[CreateUser],
+    action: FromDishka[CreateUser],
 ) -> UserDTO:
-    response = await interactor(
+    response = await action(
         CreateUserInputDTO(
             email=data.email,
             password=data.password,
@@ -44,40 +45,31 @@ async def create_identity(
 
 
 @router.post("/authorize")
-@inject
 async def authorize(
     data: AuthorizeSchema,
-    interactor: FromDishka[Authorize],
-    token_processor: AuthJWT = Depends(),
+    action: FromDishka[Authorize],
 ) -> UserDTO:
-    response = await interactor(
+    response = await action(
         AuthorizeInputDTO(
             email=data.email,
             password=data.password,
         )
     )
 
-    subject = response.user_id
-    access = token_processor.create_access_token(subject=str(subject))
-    token_processor.set_access_cookies(access)
-
     return response
 
 
 @router.get("/me")
-@inject
-async def get_identity(
-    interactor: FromDishka[GetUser]
-) -> UserDTO:
-    response = await interactor()
+async def get_identity(action: FromDishka[GetUser]) -> UserDTO:
+    response = await action()
     return response
 
 
-# @router.get("/verify/{token}")
-# @inject
-# async def verify_email(token: str, interactor: VerifyEmail) -> None:
-#     await interactor(
-#         TokenInputDTO(
-#             token=token,
-#         )
-#     )
+@router.get("/verify/{token}")
+async def verify_email(
+    token: JWTToken,
+    action: FromDishka[VerifyEmail],
+    token_processor: FromDishka[ConfirmationTokenProcessor],
+) -> None:
+    token = token_processor.decode(token)
+    await action(token)

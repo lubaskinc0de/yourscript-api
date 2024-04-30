@@ -1,0 +1,21 @@
+[external]
+frontend-url = 'http://localhost:5173'
+
+[email]
+activation-mail-subject = 'ЗАВЕРШИТЕ РЕГИСТРАЦИЮ В ZAMETKA'
+activation-url-template = 'http://localhost:5173/verify?token={}'
+activation-email-template-path = 'zametka.access_service.presentation.http'
+activation-email-template-name = 'confirmation-mail.html'
+
+[smtp]
+use-tls = true
+host = 'smtp.yandex.ru'
+port = 465
+
+[security]
+algorithm = 'HS256'
+access-token-expires-minutes = 15
+access-cookie-expires-days = 15
+
+[auth]
+auth-token-key = 'Token'

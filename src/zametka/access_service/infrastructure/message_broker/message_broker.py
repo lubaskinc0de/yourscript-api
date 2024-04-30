@@ -55,7 +55,7 @@ class RMQMessageBroker(MessageBroker):
         exchange = await self._get_exchange(exchange_name)
         await exchange.publish(rq_message, routing_key=routing_key)
 
-        logging.debug("Message sent", extra={"rq_message": rq_message})
+        logging.info("Message sent", extra={"rq_message": rq_message})
 
     async def _get_exchange(self, exchange_name: str) -> aio_pika.abc.AbstractExchange:
         return await self._channel.get_exchange(exchange_name, ensure=False)

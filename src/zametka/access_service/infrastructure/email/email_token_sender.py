@@ -1,5 +1,8 @@
 import logging
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from jinja2 import Environment
 
 from zametka.access_service.application.common.token_sender import TokenSender
@@ -7,39 +10,48 @@ from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
+from zametka.access_service.infrastructure.email.config import ActivationEmailConfig
 from zametka.access_service.infrastructure.email.email_client import EmailClient
-# from zametka.access_service.infrastructure.email.email_message import EmailMessage
+from zametka.access_service.infrastructure.jwt.confirmation_token_processor import (
+    ConfirmationTokenProcessor,
+)
 
 
 class EmailTokenSender(TokenSender):
     def __init__(
         self,
         client: EmailClient,
-        jinja: Environment,  # TODO: pass config here
+        jinja: Environment,
+        config: ActivationEmailConfig,
+        token_processor: ConfirmationTokenProcessor,
     ) -> None:
-        self._client = client
-        self._jinja = jinja
+        self.client = client
+        self.jinja = jinja
+        self.config = config
+        self.token_processor = token_processor
 
-    def _render_html(self, confirmation_token: UserConfirmationToken) -> str:
-        template = self._jinja.get_template("confirmation-email.html")
+    def _render_html(self, token: UserConfirmationToken) -> str:
+        template = self.jinja.get_template(self.config.template_name)
+        jwt_token = self.token_processor.encode(token)
 
+        logging.info(jwt_token)
         rendered: str = template.render(
-            token_link="#"  # TODO:
+            token_link=self.config.activation_url.format(jwt_token)
         )
 
         return rendered
 
     async def send(self, token: UserConfirmationToken, user: User) -> None:
-        """Send email token to the user"""
-
         html = self._render_html(token)
-        # message = EmailMessage(
-        #     subject="ЗАВЕРШИТЕ РЕГИСТРАЦИЮ В zametka.",  # TODO: take it from config
-        #     content=html,
-        #     email_to=user.email,
-        #     email_from=# TODO: TAKE IT FROM CONFIG
-        # )
+        message = MIMEMultipart("alternative")
 
-        # await self._client.send(...) # TODO: ...
+        message["From"] = self.config.email_from
+        message["To"] = user.email.to_raw()
+        message["Subject"] = self.config.subject
 
-        logging.info("email sent")
+        html_text = MIMEText(html, "html")
+        message.attach(html_text)
+
+        await self.client.send(message)
+
+        logging.info("Email sent to uid=%s", str(user.user_id.to_raw()))

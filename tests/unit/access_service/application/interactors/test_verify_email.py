@@ -46,11 +46,12 @@ def uow() -> FakeUoW:
 def get_token_with_incorrect_uid() -> UserConfirmationToken:
     return UserConfirmationToken(uid=UserId(uuid4()))
 
+
 @pytest.mark.access
 @pytest.mark.application
 async def test_verify_email(
-    user_gateway: FakeUserGateway,
-    uow: FakeUoW,
+        user_gateway: FakeUserGateway,
+        uow: FakeUoW,
 ) -> None:
     assert user_gateway.user.is_active is False
 
@@ -72,11 +73,12 @@ async def test_verify_email(
     assert uow.committed is True
     assert user_gateway.user.is_active is True
 
+
 @pytest.mark.access
 @pytest.mark.application
 async def test_verify_incorrect_email(
-    user_gateway: FakeUserGateway,
-    uow: FakeUoW,
+        user_gateway: FakeUserGateway,
+        uow: FakeUoW,
 ) -> None:
     assert user_gateway.user.is_active is False
 

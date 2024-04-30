@@ -14,16 +14,16 @@ class AMQPEventSender:
         self._message_broker = message_broker
 
     async def send(self, event: AMQPEvent[Any]) -> None:
-        # original_event = event.original_event
-        # message_data = self._retort.dump(original_event)
-        #
-        # broker_message = Message(
-        #     message_id=event.event_id,
-        #     data=message_data,
-        # )
-        #
-        # await self._message_broker.publish_message(
-        #     broker_message, event.routing_key, event.exchange_name
-        # )
+        original_event = event.original_event
+        message_data = self._retort.dump(original_event)
+
+        broker_message = Message(
+            message_id=event.event_id,
+            data=message_data,
+        )
+
+        await self._message_broker.publish_message(
+            broker_message, event.routing_key, event.exchange_name
+        )
 
         logging.info("Event %s was published.", event)

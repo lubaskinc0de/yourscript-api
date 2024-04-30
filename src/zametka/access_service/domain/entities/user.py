@@ -23,6 +23,7 @@ from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )
 
+
 @dataclass
 class User:
     user_id: UserId
@@ -37,13 +38,8 @@ class User:
         email: UserEmail,
         raw_password: UserRawPassword,
     ) -> "User":
-        hashed_password = UserHashedPassword(
-            pbkdf2_sha256.hash(raw_password.to_raw())
-        )
+        hashed_password = UserHashedPassword(pbkdf2_sha256.hash(raw_password.to_raw()))
         return cls(user_id, email, hashed_password)
-
-    def __post_init__(self) -> None:
-        self.is_active = False
 
     def ensure_can_access(self) -> None:
         if not self.is_active:

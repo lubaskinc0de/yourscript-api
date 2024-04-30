@@ -2,10 +2,18 @@ from dataclasses import dataclass
 
 
 @dataclass
-class MailConfig:
-    mail_username: str
-    mail_password: str
-    mail_from: str
-    mail_port: int
-    mail_server: str
-    mail_from_name: str
+class SMTPConfig:
+    user: str
+    password: str
+    port: int
+    host: str
+    use_tls: bool
+
+
+@dataclass
+class ActivationEmailConfig:
+    subject: str
+    activation_url: str
+    email_from: str
+    template_path: str
+    template_name: str

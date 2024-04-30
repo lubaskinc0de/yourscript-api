@@ -31,7 +31,7 @@ async def get_engine(settings: DBConfig) -> AsyncGenerator[AsyncEngine, None]:
 
 
 async def get_async_sessionmaker(
-        engine: AsyncEngine,
+    engine: AsyncEngine,
 ) -> async_sessionmaker[AsyncSession]:
     """Get async SA sessionmaker"""
 
@@ -44,6 +44,8 @@ async def get_async_sessionmaker(
     return session_factory
 
 
-async def get_async_session(session_factory: async_sessionmaker[AsyncSession]) -> AsyncIterable[AsyncSession]:
+async def get_async_session(
+    session_factory: async_sessionmaker[AsyncSession],
+) -> AsyncIterable[AsyncSession]:
     async with session_factory() as session:
         yield session

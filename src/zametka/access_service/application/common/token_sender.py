@@ -12,7 +12,5 @@ class TokenSender(Protocol):
     """Token sender interface"""
 
     @abstractmethod
-    async def send(
-        self, confirmation_token: UserConfirmationToken, user: User
-    ) -> None:
+    async def send(self, confirmation_token: UserConfirmationToken, user: User) -> None:
         raise NotImplementedError

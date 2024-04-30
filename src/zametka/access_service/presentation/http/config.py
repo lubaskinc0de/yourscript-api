@@ -21,7 +21,7 @@ class AuthJWTConfig:
 
     authjwt_cookie_csrf_protect: bool = True
 
-    authjwt_cookie_samesite: str = 'lax'
+    authjwt_cookie_samesite: str = "lax"
 
 
 def load_authjwt_config() -> AuthJWTConfig:

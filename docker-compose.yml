@@ -13,6 +13,7 @@ services:
         volumes:
             - ./src/zametka/access_service/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/access_service/infrastructure/persistence/alembic/migrations/versions
             - ./src/zametka/notes/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/notes/infrastructure/persistence/alembic/migrations/versions
+            - ./.config/dev.config.toml:/usr/local/etc/zametka/cfg.toml
         depends_on:
             - access_service_migration
             # - notes_migration

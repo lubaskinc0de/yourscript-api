@@ -1,3 +1,5 @@
+import logging
+
 import jwt
 
 from asyncpg import UniqueViolationError
@@ -118,4 +120,3 @@ async def authjwt_exception_handler(
         status_code=401,
         content={"detail": exc.message},
     )
-

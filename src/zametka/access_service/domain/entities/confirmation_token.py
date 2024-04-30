@@ -9,16 +9,15 @@ EXPIRES_AFTER = timedelta(minutes=15)
 
 
 class UserConfirmationToken:
-    __slots__ = ("uid", "_expires_in")
+    __slots__ = ("uid", "timestamp", "_expires_in")
 
     def __init__(self, uid: UserId):
         self.uid = uid
-        self._expires_in = datetime.now(tz=timezone.utc) + EXPIRES_AFTER
+        self.timestamp = datetime.now(tz=timezone.utc)
+        self._expires_in = self.timestamp + EXPIRES_AFTER
 
     @classmethod
-    def load(
-        cls, uid: UserId, timestamp: datetime
-    ) -> "UserConfirmationToken":
+    def load(cls, uid: UserId, timestamp: datetime) -> "UserConfirmationToken":
         uid = uid
         expires_in = timestamp + EXPIRES_AFTER
 

@@ -19,9 +19,9 @@ from zametka.access_service.domain.exceptions.user_identity import (
     IsNotAuthorizedError,
 )
 
-from .web_api.endpoints import user
+from .http.endpoints import user
 
-from zametka.access_service.presentation.web_api.exception_handlers.auth import (
+from zametka.access_service.presentation.http.exception_handlers.auth import (
     authjwt_exception_handler,
     corrupted_token_exception_handler,
     expired_token_exception_handler,
