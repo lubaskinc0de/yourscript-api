@@ -1,14 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from zametka.access_service.application.common.user_gateway import UserReader
 from zametka.access_service.application.dto import AccessTokenDTO
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import AccessTokenConfig
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.application.common.interactor import Interactor
-from zametka.access_service.application.common.repository import (
-    UserGateway,
-)
 
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.user_identity import (
@@ -28,7 +26,7 @@ class AuthorizeInputDTO:
 class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
     def __init__(
         self,
-        user_gateway: UserGateway,
+        user_gateway: UserReader,
         config: AccessTokenConfig,
     ):
         self.user_gateway = user_gateway
@@ -42,10 +40,10 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
         if not user:
             raise UserIsNotExistsError()
 
-        user.ensure_can_access()
-        user.ensure_passwords_match(UserRawPassword(data.password))
-
+        user.ensure_authenticated(UserRawPassword(data.password))
         token = AccessToken(user.user_id, self.config)
+
+        user.ensure_authorized(token)
 
         return AccessTokenDTO(
             uid=token.uid.to_raw(),

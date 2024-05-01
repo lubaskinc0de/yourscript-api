@@ -6,10 +6,10 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'zametka'
-version = '1.0.0'
-description = 'Zametka note app API'
+version = '0.0.1'
+description = 'zametka API'
 readme = 'README.md'
-requires-python = '>=3.10.8'
+requires-python = '>=3.11.1'
 dependencies = [
     'alembic==1.11.1',
     'asyncpg==0.29.0',
@@ -21,7 +21,6 @@ dependencies = [
     'passlib==1.7.4',
     'aiosmtplib==2.0.2',
     'Jinja2~=3.1.2',
-    'PyJWT~=2.8.0',
     'pydantic~=1.10.7',
     'starlette~=0.27.0',
     'aiohttp==3.9.1',
@@ -33,8 +32,16 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    'pytest==7.3.1',
-    'pytest-asyncio==0.20.3',
+    'pytest==8.2.0',
+    'pytest-asyncio==0.23.6',
+    'mypy==1.3.0',
+    'ruff==0.4.2'
+]
+test = [
+    'pytest==8.2.0',
+    'pytest-asyncio==0.23.6',
+]
+lint = [
     'mypy==1.3.0',
     'ruff==0.4.2'
 ]
@@ -48,7 +55,9 @@ markers = [
     'notes: tests related to notes context.',
     'domain: domain tests',
     'application: application tests',
+    'unit: unit tests',
 ]
+filterwarnings = "ignore::DeprecationWarning"
 
 [project.scripts]
 zametka = "zametka.main.cli:main"
@@ -56,9 +65,6 @@ zametka = "zametka.main.cli:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
-[tool.isort]
-profile = "black"
-
-[[project.authors]]
+[project.authors]
 name = 'lubaskinc0de'
 email = 'lubaskincorporation@gmail.com'

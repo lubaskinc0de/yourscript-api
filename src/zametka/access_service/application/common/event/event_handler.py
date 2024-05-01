@@ -8,5 +8,4 @@ from zametka.access_service.application.common.event.event import EventT
 
 class EventHandler(Generic[EventT], ABC):
     async def __call__(self, event: EventT) -> None:
-        """Event handler"""
         logging.info("Handling event: %s", event)

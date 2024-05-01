@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 from zametka.access_service.application.common.event import EventEmitter
-from zametka.access_service.application.common.id_provider import UserProvider
+from zametka.access_service.application.common.id_provider import IdProvider
 from zametka.access_service.application.common.interactor import Interactor
-from zametka.access_service.application.common.repository import (
-    UserGateway,
+from zametka.access_service.application.common.user_gateway import (
+    UserSaver,
 )
 from zametka.access_service.application.dto import UserDeletedEvent
 
@@ -21,21 +21,19 @@ class DeleteUserInputDTO:
 class DeleteUser(Interactor[DeleteUserInputDTO, None]):
     def __init__(
         self,
-        user_gateway: UserGateway,
-        user_provider: UserProvider,
+        user_gateway: UserSaver,
+        id_provider: IdProvider,
         event_emitter: EventEmitter[UserDeletedEvent],
     ):
         self.user_gateway = user_gateway
-        self.user_provider = user_provider
+        self.id_provider = id_provider
         self.event_emitter = event_emitter
 
     async def __call__(self, data: DeleteUserInputDTO) -> None:
-        user = await self.user_provider.get_user()
+        user = await self.id_provider.get_user()
         raw_password = UserRawPassword(data.password)
 
-        user.ensure_can_access()
-        user.ensure_passwords_match(raw_password)
-
+        user.ensure_authenticated(raw_password)
         await self.user_gateway.delete(user.user_id)
 
         event = UserDeletedEvent(

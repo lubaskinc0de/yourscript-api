@@ -5,7 +5,7 @@ from dishka import (
     AsyncContainer,
     make_async_container,
     provide,
-    from_context,
+    from_context, AnyOf,
 )
 from fastapi import Request
 
@@ -17,7 +17,7 @@ from zametka.access_service.application.common.id_provider import (
     IdProvider,
     UserProvider,
 )
-from zametka.access_service.application.common.repository import UserGateway
+from zametka.access_service.application.common.user_gateway import UserReader, UserSaver
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.common.uow import UoW
 from zametka.access_service.application.create_user import CreateUser
@@ -76,7 +76,7 @@ from zametka.access_service.presentation.http.jwt.token_auth import TokenAuth
 def gateway_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(UserGatewayImpl, scope=Scope.REQUEST, provides=UserGateway)
+    provider.provide(UserGatewayImpl, scope=Scope.REQUEST, provides=AnyOf[UserReader, UserSaver])
     provider.provide(SAUnitOfWork, scope=Scope.REQUEST, provides=UoW)
 
     return provider

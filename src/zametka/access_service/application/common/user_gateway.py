@@ -7,23 +7,21 @@ from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId
 
 
-class UserGateway(Protocol):
-    @abstractmethod
-    async def create(self, user: User) -> UserDTO:
-        """Create"""
-
+class UserReader(Protocol):
     @abstractmethod
     async def get(self, user_id: UserId) -> Optional[User]:
-        """Get by id"""
+        ...
 
     @abstractmethod
     async def get_by_email(self, email: UserEmail) -> Optional[User]:
-        """Get by email"""
+        ...
 
+
+class UserSaver(Protocol):
     @abstractmethod
-    async def update(self, user_id: UserId, updated_user: User) -> None:
-        """Update"""
+    async def save(self, user: User) -> UserDTO:
+        ...
 
     @abstractmethod
     async def delete(self, user_id: UserId) -> None:
-        """Delete"""
+        ...

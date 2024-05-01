@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.common.interactor import Interactor
-from zametka.access_service.application.common.repository import UserGateway
+from zametka.access_service.application.common.user_gateway import UserSaver
 from zametka.access_service.application.common.uow import UoW
 from zametka.access_service.application.dto import UserDTO, UserConfirmationTokenDTO
 from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
@@ -28,7 +28,7 @@ class CreateUserInputDTO:
 class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
     def __init__(
         self,
-        user_gateway: UserGateway,
+        user_gateway: UserSaver,
         token_sender: TokenSender,
         uow: UoW,
         config: UserConfirmationTokenConfig,
@@ -49,7 +49,7 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
             raw_password,
         )
 
-        user_dto = await self.user_gateway.create(user)
+        user_dto = await self.user_gateway.save(user)
         await self.uow.commit()
 
         token = UserConfirmationToken(user.user_id, self.config)

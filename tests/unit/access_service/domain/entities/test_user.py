@@ -3,6 +3,7 @@ import pytest
 from datetime import timezone, datetime, timedelta
 from uuid import uuid4
 
+from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
@@ -17,6 +18,7 @@ from zametka.access_service.domain.exceptions.user_identity import (
     WeakPasswordError,
     InvalidUserEmailError,
 )
+from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
@@ -36,34 +38,43 @@ def user() -> User:
     )
 
 
+@pytest.fixture
+def token(
+    user: User, confirmation_token_config: UserConfirmationTokenConfig
+) -> UserConfirmationToken:
+    return UserConfirmationToken(
+        uid=user.user_id,
+        config=confirmation_token_config,
+    )
+
+
 @pytest.mark.access
 @pytest.mark.domain
 def test_create_user(user: User):
-    user.ensure_passwords_match(UserRawPassword(USER_FAKE_PASSWORD))
+    user.ensure_authenticated(UserRawPassword(USER_FAKE_PASSWORD))
 
     with pytest.raises(UserIsNotActiveError):
-        user.ensure_can_access()
+        user.ensure_can_authorize()
 
     assert user.hashed_password.to_raw() != USER_FAKE_PASSWORD
-    assert user.is_active is False
 
 
 @pytest.mark.access
 @pytest.mark.domain
-def test_activate_user(user: User):
-    token = UserConfirmationToken(uid=user.user_id)
-
+def test_activate_user(user: User, token: UserConfirmationToken):
     user.activate(token)
-
-    assert user.is_active is True
-    user.ensure_can_access()
+    user.ensure_can_authorize()
 
 
 @pytest.mark.access
 @pytest.mark.domain
-def test_activate_user_bad_uid(user: User):
+def test_activate_user_bad_uid(
+    user: User, confirmation_token_config: UserConfirmationTokenConfig
+):
     fake_uid = uuid4()
-    token = UserConfirmationToken(uid=UserId(fake_uid))
+    token = UserConfirmationToken(
+        uid=UserId(fake_uid), config=confirmation_token_config
+    )
 
     with pytest.raises(CorruptedConfirmationTokenError):
         user.activate(token)
@@ -71,9 +82,7 @@ def test_activate_user_bad_uid(user: User):
 
 @pytest.mark.access
 @pytest.mark.domain
-def test_activate_user_twice(user: User):
-    token = UserConfirmationToken(uid=user.user_id)
-
+def test_activate_user_twice(user: User, token: UserConfirmationToken):
     user.activate(token)
 
     with pytest.raises(ConfirmationTokenAlreadyUsedError):
@@ -82,9 +91,13 @@ def test_activate_user_twice(user: User):
 
 @pytest.mark.access
 @pytest.mark.domain
-def test_activate_user_expired_token(user: User):
+def test_activate_user_expired_token(
+    user: User, confirmation_token_config: UserConfirmationTokenConfig
+):
     token = UserConfirmationToken.load(
-        user.user_id, datetime.now(tz=timezone.utc) - timedelta(days=1)
+        user.user_id,
+        ExpiresIn(datetime.now(tz=timezone.utc) - timedelta(days=1)),
+        confirmation_token_config,
     )
 
     with pytest.raises(ConfirmationTokenIsExpiredError):

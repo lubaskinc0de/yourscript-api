@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, Protocol
 
 from zametka.access_service.application.common.interactor import Interactor
-from zametka.access_service.application.common.repository import UserGateway
 from zametka.access_service.application.common.uow import UoW
+from zametka.access_service.application.common.user_gateway import UserReader, UserSaver
 from zametka.access_service.application.dto import UserConfirmationTokenDTO
 from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
 from zametka.access_service.domain.entities.user import User
@@ -13,6 +13,10 @@ from zametka.access_service.domain.entities.confirmation_token import (
 from zametka.access_service.domain.exceptions.user_identity import UserIsNotExistsError
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_id import UserId
+
+
+class UserGateway(UserReader, UserSaver, Protocol):
+    ...
 
 
 class VerifyEmail(Interactor[UserConfirmationTokenDTO, None]):
@@ -36,11 +40,11 @@ class VerifyEmail(Interactor[UserConfirmationTokenDTO, None]):
         user: Optional[User] = await self.user_gateway.get(token.uid)
 
         if not user:
-            raise UserIsNotExistsError()
+            raise UserIsNotExistsError
 
         user.activate(token)
 
-        await self.user_gateway.update(user.user_id, user)
+        await self.user_gateway.save(user)
         await self.uow.commit()
 
         return None

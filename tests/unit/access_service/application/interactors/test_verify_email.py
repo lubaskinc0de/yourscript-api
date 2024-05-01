@@ -1,14 +1,16 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from uuid import uuid4
 
 import pytest
 
-from tests.mocks.access_service.user_identity_repository import (
+from tests.mocks.access_service.user_gateway import (
     FakeUserGateway,
 )
 from tests.mocks.access_service.uow import FakeUoW
+from zametka.access_service.application.dto import UserConfirmationTokenDTO
 
-from zametka.access_service.application.verify_email import VerifyEmail, TokenInputDTO
+from zametka.access_service.application.verify_email import VerifyEmail
+from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
@@ -42,29 +44,26 @@ def uow() -> FakeUoW:
     return FakeUoW()
 
 
-@pytest.mark.skip(reason="Helper function")
-def get_token_with_incorrect_uid() -> UserConfirmationToken:
-    return UserConfirmationToken(uid=UserId(uuid4()))
-
-
 @pytest.mark.access
 @pytest.mark.application
 async def test_verify_email(
-        user_gateway: FakeUserGateway,
-        uow: FakeUoW,
+    user_gateway: FakeUserGateway,
+    uow: FakeUoW,
+    confirmation_token_config: UserConfirmationTokenConfig,
 ) -> None:
     assert user_gateway.user.is_active is False
 
     interactor = VerifyEmail(
         user_gateway,
         uow=uow,
+        config=confirmation_token_config,
     )
 
-    token = UserConfirmationToken(uid=user_gateway.user.user_id)
+    token = UserConfirmationToken(uid=user_gateway.user.user_id, config=confirmation_token_config)
 
-    dto = TokenInputDTO(
+    dto = UserConfirmationTokenDTO(
         uid=token.uid.to_raw(),
-        timestamp=datetime.now(tz=timezone.utc),
+        expires_in=datetime.now(tz=timezone.utc) + timedelta(minutes=5),
     )
 
     result = await interactor(dto)
@@ -77,21 +76,24 @@ async def test_verify_email(
 @pytest.mark.access
 @pytest.mark.application
 async def test_verify_incorrect_email(
-        user_gateway: FakeUserGateway,
-        uow: FakeUoW,
+    user_gateway: FakeUserGateway,
+    uow: FakeUoW,
+    confirmation_token_config: UserConfirmationTokenConfig,
+    incorrect_confirmation_token: UserConfirmationToken,
 ) -> None:
     assert user_gateway.user.is_active is False
 
     interactor = VerifyEmail(
         user_gateway=user_gateway,
         uow=uow,
+        config=confirmation_token_config,
     )
 
-    token = get_token_with_incorrect_uid()
+    token = incorrect_confirmation_token
 
-    dto = TokenInputDTO(
+    dto = UserConfirmationTokenDTO(
         uid=token.uid.to_raw(),
-        timestamp=datetime.now(tz=timezone.utc),
+        expires_in=datetime.now(tz=timezone.utc) + timedelta(minutes=5),
     )
 
     with pytest.raises(UserIsNotExistsError):
