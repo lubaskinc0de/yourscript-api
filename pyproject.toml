@@ -65,6 +65,6 @@ zametka = "zametka.main.cli:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
-[project.authors]
+[[project.authors]]
 name = 'lubaskinc0de'
 email = 'lubaskincorporation@gmail.com'
