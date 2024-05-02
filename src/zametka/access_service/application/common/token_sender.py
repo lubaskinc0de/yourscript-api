@@ -10,5 +10,4 @@ class TokenSender(Protocol):
     @abstractmethod
     async def send(
         self, confirmation_token: UserConfirmationTokenDTO, user: User
-    ) -> None:
-        ...
+    ) -> None: ...

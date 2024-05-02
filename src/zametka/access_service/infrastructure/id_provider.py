@@ -2,10 +2,11 @@ from zametka.access_service.application.common.id_provider import (
     IdProvider,
 )
 from zametka.access_service.application.common.user_gateway import UserReader
+from zametka.access_service.domain.common.access_service import AccessService
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.access_token import UnauthorizedError
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotExistsError,
 )
 from zametka.access_service.domain.value_objects.user_id import UserId
@@ -15,11 +16,13 @@ class TokenIdProvider(IdProvider):
     def __init__(
         self,
         token: AccessToken,
-        user_gateway: UserReader
+        access_service: AccessService,
+        user_gateway: UserReader,
     ):
         self._token = token
         self._user_id = None
         self._user_gateway = user_gateway
+        self._access_service = access_service
 
     def _get_id(self) -> UserId:
         if self._user_id:
@@ -37,6 +40,6 @@ class TokenIdProvider(IdProvider):
         if not user:
             raise UnauthorizedError from UserIsNotExistsError
 
-        user.ensure_authorized(self._token)
+        self._access_service.authorize(user)
 
         return user

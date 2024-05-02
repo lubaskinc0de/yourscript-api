@@ -10,7 +10,7 @@ from zametka.access_service.domain.exceptions.confirmation_token import (
     CorruptedConfirmationTokenError,
     ConfirmationTokenAlreadyUsedError,
 )
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     InvalidCredentialsError,
     UserIsNotActiveError,
     UserIsNotExistsError,

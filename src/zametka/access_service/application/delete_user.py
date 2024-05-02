@@ -33,7 +33,7 @@ class DeleteUser(Interactor[DeleteUserInputDTO, None]):
         user = await self.id_provider.get_user()
         raw_password = UserRawPassword(data.password)
 
-        user.ensure_authenticated(raw_password)
+        user.authenticate(raw_password)
         await self.user_gateway.delete(user.user_id)
 
         event = UserDeletedEvent(

@@ -13,7 +13,7 @@ from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenAlreadyUsedError,
     ConfirmationTokenIsExpiredError,
 )
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     WeakPasswordError,
     InvalidUserEmailError,
@@ -51,10 +51,10 @@ def token(
 @pytest.mark.access
 @pytest.mark.domain
 def test_create_user(user: User):
-    user.ensure_authenticated(UserRawPassword(USER_FAKE_PASSWORD))
+    user.authenticate(UserRawPassword(USER_FAKE_PASSWORD))
 
     with pytest.raises(UserIsNotActiveError):
-        user.ensure_can_authorize()
+        user.ensure_is_active()
 
     assert user.hashed_password.to_raw() != USER_FAKE_PASSWORD
 
@@ -63,7 +63,7 @@ def test_create_user(user: User):
 @pytest.mark.domain
 def test_activate_user(user: User, token: UserConfirmationToken):
     user.activate(token)
-    user.ensure_can_authorize()
+    user.ensure_is_active()
 
 
 @pytest.mark.access

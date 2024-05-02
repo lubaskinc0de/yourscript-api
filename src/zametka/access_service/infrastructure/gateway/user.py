@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from zametka.access_service.application.dto import UserDTO
 from zametka.access_service.application.common.user_gateway import (
-    UserReader, UserSaver,
+    UserReader,
+    UserSaver,
 )
 
 from zametka.access_service.domain.entities.user import (

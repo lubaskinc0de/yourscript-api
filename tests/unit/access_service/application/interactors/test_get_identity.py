@@ -9,7 +9,7 @@ from zametka.access_service.application.get_user import (
     GetUser,
 )
 from zametka.access_service.application.dto import UserDTO
-from zametka.access_service.domain.exceptions.user_identity import UserIsNotActiveError
+from zametka.access_service.domain.exceptions.user import UserIsNotActiveError
 
 
 @pytest.mark.access

@@ -9,7 +9,7 @@ from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.application.common.interactor import Interactor
 
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotExistsError,
 )
 from zametka.access_service.domain.value_objects.user_raw_password import (
@@ -40,10 +40,10 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
         if not user:
             raise UserIsNotExistsError()
 
-        user.ensure_authenticated(UserRawPassword(data.password))
-        token = AccessToken(user.user_id, self.config)
+        user.authenticate(UserRawPassword(data.password))
+        user.ensure_is_active()
 
-        user.ensure_authorized(token)
+        token = AccessToken(user.user_id, self.config)
 
         return AccessTokenDTO(
             uid=token.uid.to_raw(),

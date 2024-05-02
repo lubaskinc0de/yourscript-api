@@ -5,7 +5,8 @@ from dishka import (
     AsyncContainer,
     make_async_container,
     provide,
-    from_context, AnyOf,
+    from_context,
+    AnyOf,
 )
 from fastapi import Request
 
@@ -15,7 +16,6 @@ from zametka.access_service.application.authorize import Authorize
 from zametka.access_service.application.common.event import EventEmitter
 from zametka.access_service.application.common.id_provider import (
     IdProvider,
-    UserProvider,
 )
 from zametka.access_service.application.common.user_gateway import UserReader, UserSaver
 from zametka.access_service.application.common.token_sender import TokenSender
@@ -24,9 +24,14 @@ from zametka.access_service.application.create_user import CreateUser
 from zametka.access_service.application.delete_user import DeleteUser
 from zametka.access_service.application.get_user import GetUser
 from zametka.access_service.application.verify_email import VerifyEmail
+from zametka.access_service.domain.common.access_service import AccessService
+from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import (
     AccessTokenConfig,
     UserConfirmationTokenConfig,
+)
+from zametka.access_service.domain.services.token_access_service import (
+    TokenAccessService,
 )
 from zametka.access_service.infrastructure.email.aio_email_client import (
     AioSMTPEmailClient,
@@ -41,7 +46,6 @@ from zametka.access_service.infrastructure.event_bus.event_emitter import (
 
 from zametka.access_service.infrastructure.id_provider import (
     TokenIdProvider,
-    UserProviderImpl,
 )
 from zametka.access_service.infrastructure.jwt.access_token_processor import (
     AccessTokenProcessor,
@@ -76,7 +80,9 @@ from zametka.access_service.presentation.http.jwt.token_auth import TokenAuth
 def gateway_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(UserGatewayImpl, scope=Scope.REQUEST, provides=AnyOf[UserReader, UserSaver])
+    provider.provide(
+        UserGatewayImpl, scope=Scope.REQUEST, provides=AnyOf[UserReader, UserSaver]
+    )
     provider.provide(SAUnitOfWork, scope=Scope.REQUEST, provides=UoW)
 
     return provider
@@ -107,11 +113,18 @@ def interactor_provider() -> Provider:
 def infrastructure_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(UserProviderImpl, scope=Scope.REQUEST, provides=UserProvider)
     provider.provide(EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter)
     provider.provide(PyJWTProcessor, scope=Scope.APP, provides=JWTProcessor)
     provider.provide(ConfirmationTokenProcessor, scope=Scope.APP)
     provider.provide(AccessTokenProcessor, scope=Scope.APP)
+
+    return provider
+
+
+def service_provider() -> Provider:
+    provider = Provider()
+
+    provider.provide(TokenAccessService, scope=Scope.REQUEST, provides=AccessService)
 
     return provider
 
@@ -163,12 +176,21 @@ class HTTPProvider(Provider):
         return token_auth
 
     @provide(scope=Scope.REQUEST)
+    def get_access_token(self, token_auth: TokenAuth) -> AccessToken:
+        token = token_auth.get_access_token()
+        return token
+
+    @provide(scope=Scope.REQUEST)
     def get_idp(
         self,
         token_auth: TokenAuth,
+        access_service: AccessService,
+        user_gateway: UserReader,
     ) -> IdProvider:
         token = token_auth.get_access_token()
-        id_provider = TokenIdProvider(token=token)
+        id_provider = TokenIdProvider(
+            token=token, access_service=access_service, user_gateway=user_gateway
+        )
 
         return id_provider
 

@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 
 from zametka.access_service.domain.common.value_objects.base import ValueObject
-from zametka.access_service.domain.exceptions.user_identity import WeakPasswordError
+from zametka.access_service.domain.exceptions.user import WeakPasswordError
 
 
 @dataclass(frozen=True)

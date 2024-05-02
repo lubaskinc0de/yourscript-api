@@ -3,16 +3,14 @@ from typing import Union
 
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 
-from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
-from zametka.access_service.domain.exceptions.access_token import UnauthorizedError
 from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenAlreadyUsedError,
     CorruptedConfirmationTokenError,
 )
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     InvalidCredentialsError,
 )
@@ -43,18 +41,11 @@ class User:
         hashed_password = UserHashedPassword(pbkdf2_sha256.hash(raw_password.to_raw()))
         return cls(user_id, email, hashed_password)
 
-    def ensure_can_authorize(self) -> None:
+    def ensure_is_active(self) -> None:
         if not self.is_active:
-            raise UserIsNotActiveError from UnauthorizedError
+            raise UserIsNotActiveError
 
-    def ensure_authorized(self, access_token: AccessToken) -> None:
-        self.ensure_can_authorize()
-        access_token.verify()
-
-        if not access_token.uid == self.user_id:
-            raise UnauthorizedError
-
-    def ensure_authenticated(self, raw_password: UserRawPassword) -> None:
+    def authenticate(self, raw_password: UserRawPassword) -> None:
         passwords_match = pbkdf2_sha256.verify(
             raw_password.to_raw(), self.hashed_password.to_raw()
         )

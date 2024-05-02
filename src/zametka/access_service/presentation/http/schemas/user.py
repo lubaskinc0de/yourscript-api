@@ -2,7 +2,7 @@ from email_validator import EmailNotValidError, validate_email
 
 from pydantic import BaseModel, root_validator, validator
 
-from zametka.access_service.domain.exceptions.user_identity import InvalidUserEmailError
+from zametka.access_service.domain.exceptions.user import InvalidUserEmailError
 
 
 def email_validator(email: str) -> str:

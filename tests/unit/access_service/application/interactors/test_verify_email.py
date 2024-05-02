@@ -15,7 +15,7 @@ from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.domain.exceptions.user_identity import UserIsNotExistsError
+from zametka.access_service.domain.exceptions.user import UserIsNotExistsError
 
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId
@@ -59,7 +59,9 @@ async def test_verify_email(
         config=confirmation_token_config,
     )
 
-    token = UserConfirmationToken(uid=user_gateway.user.user_id, config=confirmation_token_config)
+    token = UserConfirmationToken(
+        uid=user_gateway.user.user_id, config=confirmation_token_config
+    )
 
     dto = UserConfirmationTokenDTO(
         uid=token.uid.to_raw(),

@@ -8,9 +8,18 @@ from tests.mocks.access_service.id_provider import FakeIdProvider
 from tests.mocks.access_service.token_sender import FakeTokenSender
 from tests.mocks.access_service.uow import FakeUoW
 from tests.mocks.access_service.user_gateway import FakeUserGateway
-from tests.unit.access_service.application.interactors.const import USER_EMAIL, USER_PASSWORD, USER_ID
-from zametka.access_service.domain.entities.config import AccessTokenConfig, UserConfirmationTokenConfig
-from zametka.access_service.domain.entities.confirmation_token import UserConfirmationToken
+from tests.unit.access_service.application.interactors.const import (
+    USER_EMAIL,
+    USER_PASSWORD,
+    USER_ID,
+)
+from zametka.access_service.domain.entities.config import (
+    AccessTokenConfig,
+    UserConfirmationTokenConfig,
+)
+from zametka.access_service.domain.entities.confirmation_token import (
+    UserConfirmationToken,
+)
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
@@ -66,5 +75,7 @@ def confirmation_token_config() -> UserConfirmationTokenConfig:
 
 
 @pytest.fixture
-def incorrect_confirmation_token(confirmation_token_config: UserConfirmationTokenConfig) -> UserConfirmationToken:
+def incorrect_confirmation_token(
+    confirmation_token_config: UserConfirmationTokenConfig,
+) -> UserConfirmationToken:
     return UserConfirmationToken(uid=UserId(uuid4()), config=confirmation_token_config)

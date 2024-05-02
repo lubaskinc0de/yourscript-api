@@ -8,6 +8,6 @@ class FakeIdProvider(IdProvider):
         self.user = user
 
     async def get_user(self) -> User:
-        self.user.ensure_can_authorize()
+        self.user.ensure_is_active()
         self.requested = True
         return self.user

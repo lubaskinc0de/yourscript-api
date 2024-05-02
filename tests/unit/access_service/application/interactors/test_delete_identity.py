@@ -12,7 +12,7 @@ from zametka.access_service.application.delete_user import (
 )
 
 from zametka.access_service.application.dto import UserDeletedEvent
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     InvalidCredentialsError,
 )

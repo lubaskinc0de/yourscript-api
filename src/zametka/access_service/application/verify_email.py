@@ -10,13 +10,12 @@ from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
-from zametka.access_service.domain.exceptions.user_identity import UserIsNotExistsError
+from zametka.access_service.domain.exceptions.user import UserIsNotExistsError
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_id import UserId
 
 
-class UserGateway(UserReader, UserSaver, Protocol):
-    ...
+class UserGateway(UserReader, UserSaver, Protocol): ...
 
 
 class VerifyEmail(Interactor[UserConfirmationTokenDTO, None]):

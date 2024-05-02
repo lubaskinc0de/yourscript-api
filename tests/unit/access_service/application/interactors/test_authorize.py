@@ -13,7 +13,7 @@ from zametka.access_service.application.authorize import (
 from zametka.access_service.application.dto import AccessTokenDTO
 from zametka.access_service.domain.entities.config import AccessTokenConfig
 
-from zametka.access_service.domain.exceptions.user_identity import (
+from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     UserIsNotExistsError,
     InvalidCredentialsError,
