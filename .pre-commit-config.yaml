@@ -1,4 +1,14 @@
 repos:
+-   repo: 'https://github.com/pre-commit/pre-commit-hooks'
+    rev: v4.5.0
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
+        exclude: ^.*_312\.py$
+      - id: detect-private-key
+      - id: trailing-whitespace
+      - id: check-added-large-files
+        args: ['--maxkb=100']
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.2
     hooks:
