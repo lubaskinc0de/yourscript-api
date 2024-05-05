@@ -1,11 +1,18 @@
 services:
+    web:
+        image: nginx:1.25.5-alpine
+        ports:
+            - 80:80
+        depends_on:
+            - backend
+        volumes:
+            - ./.config/nginx/nginx.conf:/etc/nginx/nginx.conf
+
     backend:
         container_name: backend
         restart: on-failure
         build: .
-        command: python src/zametka/main/web.py
-        ports:
-            - "8000:80"
+        command: fastapi run src/zametka/main/web.py
         env_file:
             - .env.access_service
             - .env.notes
@@ -15,9 +22,7 @@ services:
             - ./src/zametka/notes/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/notes/infrastructure/persistence/alembic/migrations/versions
             - ./.config/dev.config.toml:/usr/local/etc/zametka/cfg.toml
         depends_on:
-            - access_service_migration
-            # - notes_migration
-
+            - migration
     db:
         container_name: persistence
         image: zametkaru/postgres-multi-db
@@ -31,31 +36,20 @@ services:
             interval: 2s
             timeout: 60s
             retries: 10
-            start_period: 5s
+            start_period: 3s
 
-    access_service_migration:
-        container_name: access_service_migration
+    migration:
+        container_name: migration
         build: .
         restart: on-failure
         env_file:
             - .env.access_service
             - .env
+            - .env.notes
         depends_on:
             db:
                 condition: service_healthy
-        command: [ "zametka", "access_service", "alembic", "upgrade", "head" ]
-
-#    notes_migration:
-#        container_name: notes_migration
-#        build: .
-#        restart: on-failure
-#        env_file:
-#            - .env.notes
-#            - .env
-#        depends_on:
-#            db:
-#                condition: service_healthy
-#        command: [ "zametka", "notes", "alembic", "upgrade", "head" ]
+        command: [ "zametka" ]
 
 volumes:
     pg_data:

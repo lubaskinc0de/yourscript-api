@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from string import ascii_letters
+from email_validator import EmailNotValidError, validate_email
 
 from dataclasses import dataclass
 from typing import Union
@@ -17,33 +17,10 @@ class UserEmail(ValueObject[str]):
     MIN_LENGTH = 6
 
     def _validate(self) -> None:
-        if len(self.value) > self.MAX_LENGTH:
-            raise InvalidUserEmailError("Слишком длинный e-email!")
-        if len(self.value) < self.MIN_LENGTH:
-            raise InvalidUserEmailError("Слишком короткий e-email!")
-
-        invalid_email_exc = InvalidUserEmailError("Неправильный e-email!")
-
-        if self.value.isspace():
-            raise invalid_email_exc
-        if self.value.isdigit():
-            raise invalid_email_exc
-        if "@" not in self.value:
-            raise invalid_email_exc
-        if "." not in self.value:
-            raise invalid_email_exc
-        if " " in self.value:
-            raise invalid_email_exc
-        if not set(ascii_letters).intersection(self.value):
-            raise invalid_email_exc
-
-        address = self.value.split("@")[0]
-
-        if not set(ascii_letters).intersection(address):
-            raise invalid_email_exc
-
-        if {"@", "#", ".", "&", "*", "$", "%", "(", ")"}.intersection(address):
-            raise invalid_email_exc
+        try:
+            validate_email(self.value, check_deliverability=False)
+        except EmailNotValidError as exc:
+            raise InvalidUserEmailError from exc
 
     def __eq__(self, other: Union[UserEmail, object]) -> bool:
         if not isinstance(other, UserEmail):

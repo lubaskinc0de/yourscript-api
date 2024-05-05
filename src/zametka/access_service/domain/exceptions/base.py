@@ -1,6 +1,4 @@
-from typing import Optional
+from zametka.access_service.domain.common.app_error import AppError
 
 
-class DomainError(Exception):
-    def __init__(self, message: Optional[str] = None):
-        self.message = message
+class DomainError(AppError): ...

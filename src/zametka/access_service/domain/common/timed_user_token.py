@@ -1,39 +1,33 @@
-from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Self, Type
+from __future__ import annotations
+
+from abc import abstractmethod, ABC
+from dataclasses import dataclass
 
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_id import UserId
 
 
-class TimedUserToken(ABC):
-    __slots__ = ("uid", "_expires_in")
-
+@dataclass(frozen=True)
+class TimedTokenMetadata:
     uid: UserId
-    _expires_in: ExpiresIn
+    expires_in: ExpiresIn
 
-    @classmethod
-    def load(
-        cls: Type[Self], uid: UserId, expires_in: ExpiresIn, *args, **kwargs
-    ) -> Self:
-        instance = cls(uid, *args, **kwargs)
-        instance._expires_in = expires_in
 
-        return instance
+class TimedUserToken(ABC):
+    __slots__ = ("metadata",)
+
+    metadata: TimedTokenMetadata
+
+    def __init__(self, metadata: TimedTokenMetadata) -> None:
+        self.metadata = metadata
 
     @property
     def expires_in(self) -> ExpiresIn:
-        return self._expires_in
+        return self.metadata.expires_in
 
     @property
-    def _is_expired(self) -> bool:
-        if self._expires_in.is_expired:
-            return True
-        return False
-
-    @property
-    def _now(self) -> datetime:
-        return datetime.now(tz=timezone.utc)
+    def uid(self) -> UserId:
+        return self.metadata.uid
 
     @abstractmethod
     def verify(self) -> None: ...

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from zametka.access_service.application.common.id_provider import (
     IdProvider,
 )
@@ -5,7 +7,9 @@ from zametka.access_service.application.common.user_gateway import UserReader
 from zametka.access_service.domain.common.access_service import AccessService
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.domain.exceptions.access_token import UnauthorizedError
+from zametka.access_service.domain.exceptions.access_token import (
+    UnauthorizedError,
+)
 from zametka.access_service.domain.exceptions.user import (
     UserIsNotExistsError,
 )
@@ -20,7 +24,7 @@ class TokenIdProvider(IdProvider):
         user_gateway: UserReader,
     ):
         self._token = token
-        self._user_id = None
+        self._user_id: Optional[UserId] = None
         self._user_gateway = user_gateway
         self._access_service = access_service
 

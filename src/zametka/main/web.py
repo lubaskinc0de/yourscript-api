@@ -1,5 +1,4 @@
 import logging
-import uvicorn
 
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
@@ -15,9 +14,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
 
-app = FastAPI()
+app = FastAPI(root_path="/api/")
 
 logging.info("App was created.")
 
@@ -37,6 +35,3 @@ access_presentation.include_exception_handlers(app)
 access_presentation.include_routers(app)
 
 setup_dishka(access_di.setup_http_di(), app)
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", reload=False, port=80)

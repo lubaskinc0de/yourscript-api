@@ -21,13 +21,27 @@ def access_service_alembic_handler(args: list[str]) -> None:
     )
 
 
+def all_alembic_handler(args: list[str]) -> None:
+    notes_alembic_handler(args)
+    access_service_alembic_handler(args)
+
+
 def main() -> None:
     print(">> zametka CLI <<")
 
     argv = sys.argv[1:]
-    module = argv[0]
-    option = argv[1]
-    args = argv[2:]
+
+    if not argv:
+        print(">> Hi, my friend.")
+        return None
+
+    try:
+        module = argv[0]
+        option = argv[1]
+        args = argv[2:]
+    except IndexError:
+        print(">> Invalid option!")
+        return None
 
     modules = {
         "notes": {
@@ -36,14 +50,17 @@ def main() -> None:
         "access_service": {
             "alembic": access_service_alembic_handler,
         },
+        "all": {
+            "alembic": all_alembic_handler,
+        },
     }
 
     if module not in modules:
-        print("No such module.")
+        print(">> No such module.")
         return None
 
     if option not in modules[module]:
-        print("No such option.")
+        print(">> No such option.")
         return None
 
     modules[module][option](args)

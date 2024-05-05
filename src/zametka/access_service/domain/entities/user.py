@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Union
 
-from passlib.handlers.pbkdf2 import pbkdf2_sha256
-
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
@@ -10,9 +8,15 @@ from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenAlreadyUsedError,
     CorruptedConfirmationTokenError,
 )
+from zametka.access_service.domain.exceptions.password_hasher import (
+    PasswordMismatchError,
+)
 from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     InvalidCredentialsError,
+)
+from zametka.access_service.domain.services.password_hasher import (
+    PasswordHasher,
 )
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_hashed_password import (
@@ -37,21 +41,22 @@ class User:
         user_id: UserId,
         email: UserEmail,
         raw_password: UserRawPassword,
+        password_hasher: PasswordHasher,
     ) -> "User":
-        hashed_password = UserHashedPassword(pbkdf2_sha256.hash(raw_password.to_raw()))
+        hashed_password = password_hasher.hash_password(raw_password)
         return cls(user_id, email, hashed_password)
 
     def ensure_is_active(self) -> None:
         if not self.is_active:
             raise UserIsNotActiveError
 
-    def authenticate(self, raw_password: UserRawPassword) -> None:
-        passwords_match = pbkdf2_sha256.verify(
-            raw_password.to_raw(), self.hashed_password.to_raw()
-        )
-
-        if not passwords_match:
-            raise InvalidCredentialsError
+    def authenticate(
+        self, raw_password: UserRawPassword, password_hasher: PasswordHasher
+    ) -> None:
+        try:
+            password_hasher.verify_password(raw_password, self.hashed_password)
+        except PasswordMismatchError as exc:
+            raise InvalidCredentialsError from exc
 
     def _activate(self) -> None:
         self.is_active = True

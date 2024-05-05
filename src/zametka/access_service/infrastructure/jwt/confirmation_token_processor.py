@@ -30,9 +30,13 @@ class ConfirmationTokenProcessor:
         try:
             payload = self.jwt_processor.decode(token)
             uid = UUID(payload["sub"])
-            expires_in = datetime.fromtimestamp(float(payload["exp"]), timezone.utc)
+            expires_in = datetime.fromtimestamp(
+                float(payload["exp"]), timezone.utc
+            )
 
-            token = UserConfirmationTokenDTO(uid=uid, expires_in=expires_in)
-            return token
+            confirmation_token = UserConfirmationTokenDTO(
+                uid=uid, expires_in=expires_in
+            )
+            return confirmation_token
         except (JWTDecodeError, ValueError, TypeError, KeyError) as exc:
             raise CorruptedConfirmationTokenError from exc

@@ -4,7 +4,9 @@ from zametka.access_service.application.common.uow import UoW
 
 
 class RabbitMQUoW(UoW):
-    def __init__(self, rq_transaction: aio_pika.abc.AbstractTransaction) -> None:
+    def __init__(
+        self, rq_transaction: aio_pika.abc.AbstractTransaction
+    ) -> None:
         self._rq_transaction = rq_transaction
 
     async def commit(self) -> None:

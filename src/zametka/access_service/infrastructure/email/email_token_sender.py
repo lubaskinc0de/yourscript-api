@@ -9,8 +9,12 @@ from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.dto import UserConfirmationTokenDTO
 
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.infrastructure.email.config import ActivationEmailConfig
-from zametka.access_service.infrastructure.email.email_client import EmailClient
+from zametka.access_service.infrastructure.email.config import (
+    ActivationEmailConfig,
+)
+from zametka.access_service.infrastructure.email.email_client import (
+    EmailClient,
+)
 from zametka.access_service.infrastructure.jwt.confirmation_token_processor import (
     ConfirmationTokenProcessor,
 )

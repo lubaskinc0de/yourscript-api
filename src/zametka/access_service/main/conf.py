@@ -15,7 +15,9 @@ from zametka.access_service.infrastructure.email.config import (
     ActivationEmailConfig,
 )
 from zametka.access_service.infrastructure.jwt.config import JWTConfig
-from zametka.access_service.infrastructure.message_broker.config import AMQPConfig
+from zametka.access_service.infrastructure.message_broker.config import (
+    AMQPConfig,
+)
 from zametka.access_service.infrastructure.persistence.config import DBConfig
 from zametka.access_service.presentation.http.jwt.config import TokenAuthConfig
 
@@ -68,7 +70,9 @@ def load_all_config() -> AllConfig:
         jwt_algorithm = cfg["security"]["algorithm"]
         jwt_token_key = cfg["auth"]["auth-token-key"]
 
-        access_token_expires_after = cfg["security"]["access-token-expires-minutes"]
+        access_token_expires_after = cfg["security"][
+            "access-token-expires-minutes"
+        ]
         confirmation_token_expires_after = cfg["security"][
             "confirmation-token-expires-minutes"
         ]

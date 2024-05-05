@@ -1,3 +1,5 @@
+import argon2
+
 from aiosmtplib import SMTP
 from dishka import (
     Provider,
@@ -17,7 +19,10 @@ from zametka.access_service.application.common.event import EventEmitter
 from zametka.access_service.application.common.id_provider import (
     IdProvider,
 )
-from zametka.access_service.application.common.user_gateway import UserReader, UserSaver
+from zametka.access_service.application.common.user_gateway import (
+    UserReader,
+    UserSaver,
+)
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.common.uow import UoW
 from zametka.access_service.application.create_user import CreateUser
@@ -30,13 +35,20 @@ from zametka.access_service.domain.entities.config import (
     AccessTokenConfig,
     UserConfirmationTokenConfig,
 )
+from zametka.access_service.domain.services.password_hasher import (
+    ArgonPasswordHasher,
+    PasswordHasher,
+)
 from zametka.access_service.domain.services.token_access_service import (
     TokenAccessService,
 )
 from zametka.access_service.infrastructure.email.aio_email_client import (
     AioSMTPEmailClient,
 )
-from zametka.access_service.infrastructure.email.config import ActivationEmailConfig
+from zametka.access_service.infrastructure.email.config import (
+    ActivationEmailConfig,
+    SMTPConfig,
+)
 from zametka.access_service.infrastructure.email.email_token_sender import (
     EmailTokenSender,
 )
@@ -58,6 +70,10 @@ from zametka.access_service.infrastructure.jwt.jwt_processor import (
     PyJWTProcessor,
     JWTProcessor,
 )
+from zametka.access_service.infrastructure.message_broker.config import (
+    AMQPConfig,
+)
+from zametka.access_service.infrastructure.persistence.config import DBConfig
 
 from zametka.access_service.infrastructure.persistence.provider import (
     get_async_session,
@@ -69,9 +85,6 @@ from zametka.access_service.infrastructure.gateway.user import UserGatewayImpl
 
 from zametka.access_service.main.conf import (
     load_all_config,
-    DBConfig,
-    AMQPConfig,
-    SMTPConfig,
 )
 from zametka.access_service.presentation.http.jwt.config import TokenAuthConfig
 from zametka.access_service.presentation.http.jwt.token_auth import TokenAuth
@@ -81,7 +94,9 @@ def gateway_provider() -> Provider:
     provider = Provider()
 
     provider.provide(
-        UserGatewayImpl, scope=Scope.REQUEST, provides=AnyOf[UserReader, UserSaver]
+        UserGatewayImpl,
+        scope=Scope.REQUEST,
+        provides=AnyOf[UserReader, UserSaver],
     )
     provider.provide(SAUnitOfWork, scope=Scope.REQUEST, provides=UoW)
 
@@ -113,7 +128,9 @@ def interactor_provider() -> Provider:
 def infrastructure_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter)
+    provider.provide(
+        EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter
+    )
     provider.provide(PyJWTProcessor, scope=Scope.APP, provides=JWTProcessor)
     provider.provide(ConfirmationTokenProcessor, scope=Scope.APP)
     provider.provide(AccessTokenProcessor, scope=Scope.APP)
@@ -124,7 +141,13 @@ def infrastructure_provider() -> Provider:
 def service_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(TokenAccessService, scope=Scope.REQUEST, provides=AccessService)
+    provider.provide(
+        TokenAccessService, scope=Scope.REQUEST, provides=AccessService
+    )
+    provider.provide(argon2.PasswordHasher, scope=Scope.APP)
+    provider.provide(
+        ArgonPasswordHasher, scope=Scope.APP, provides=PasswordHasher
+    )
 
     return provider
 
@@ -144,7 +167,9 @@ def config_provider() -> Provider:
         lambda: config.token_auth, scope=Scope.APP, provides=TokenAuthConfig
     )
     provider.provide(
-        lambda: config.access_token, scope=Scope.APP, provides=AccessTokenConfig
+        lambda: config.access_token,
+        scope=Scope.APP,
+        provides=AccessTokenConfig,
     )
     provider.provide(
         lambda: config.confirmation_token,
@@ -164,11 +189,9 @@ class HTTPProvider(Provider):
         request: Request,
         token_processor: AccessTokenProcessor,
         token_auth_config: TokenAuthConfig,
-        access_token_config: AccessTokenConfig,
     ) -> TokenAuth:
         token_auth = TokenAuth(
             req=request,
-            access_token_config=access_token_config,
             config=token_auth_config,
             token_processor=token_processor,
         )
@@ -189,7 +212,9 @@ class HTTPProvider(Provider):
     ) -> IdProvider:
         token = token_auth.get_access_token()
         id_provider = TokenIdProvider(
-            token=token, access_service=access_service, user_gateway=user_gateway
+            token=token,
+            access_service=access_service,
+            user_gateway=user_gateway,
         )
 
         return id_provider
@@ -231,6 +256,7 @@ def setup_providers() -> list[Provider]:
         interactor_provider(),
         infrastructure_provider(),
         config_provider(),
+        service_provider(),
     ]
     return providers
 

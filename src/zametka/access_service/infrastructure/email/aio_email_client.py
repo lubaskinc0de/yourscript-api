@@ -3,7 +3,9 @@ from typing import Any
 
 from aiosmtplib import SMTP
 
-from zametka.access_service.infrastructure.email.email_client import EmailClient
+from zametka.access_service.infrastructure.email.email_client import (
+    EmailClient,
+)
 
 
 class AioSMTPEmailClient(EmailClient):

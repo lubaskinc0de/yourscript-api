@@ -27,8 +27,8 @@ from zametka.access_service.presentation.http.schemas.user import (
 )
 
 router = APIRouter(
-    prefix="/access",
-    tags=["access"],
+    prefix="/auth",
+    tags=["Auth"],
     responses={404: {"description": "Не найдено"}},
     route_class=DishkaRoute,
 )
@@ -86,5 +86,5 @@ async def verify_email(
     action: FromDishka[VerifyEmail],
     token_processor: FromDishka[ConfirmationTokenProcessor],
 ) -> None:
-    token = token_processor.decode(token)
-    await action(token)
+    decoded_token = token_processor.decode(token)
+    await action(decoded_token)

@@ -21,7 +21,9 @@ class UserRawPassword(ValueObject[str]):
             "Пароль не должен состоять только из заглавных букв.": lambda s: any(
                 x.islower() for x in s
             ),
-            "Пароль должен содержать число.": lambda s: any(x.isdigit() for x in s),
+            "Пароль должен содержать число.": lambda s: any(
+                x.isdigit() for x in s
+            ),
             "Пароль не должен содержать пробелы.": lambda s: not any(
                 x.isspace() for x in s
             ),

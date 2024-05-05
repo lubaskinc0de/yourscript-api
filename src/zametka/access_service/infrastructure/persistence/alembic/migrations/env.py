@@ -7,7 +7,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from zametka.access_service.infrastructure.persistence.config import load_alembic_config
+from zametka.access_service.infrastructure.persistence.config import (
+    load_alembic_config,
+)
 from zametka.access_service.infrastructure.persistence.models import Base
 
 # this is the Alembic Config object, which provides

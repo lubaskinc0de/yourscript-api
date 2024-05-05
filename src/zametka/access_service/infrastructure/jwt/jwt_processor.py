@@ -30,6 +30,6 @@ class PyJWTProcessor(JWTProcessor):
 
     def decode(self, token: JWTToken) -> JWTPayload:
         try:
-            return jwt.decode(token, self.key, algorithms=[self.algorithm])
+            return jwt.decode(token, self.key, algorithms=[self.algorithm])  # type:ignore
         except jwt.DecodeError as exc:
             raise JWTDecodeError from exc

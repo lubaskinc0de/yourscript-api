@@ -1,17 +1,30 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.common.interactor import Interactor
 from zametka.access_service.application.common.user_gateway import UserSaver
 from zametka.access_service.application.common.uow import UoW
-from zametka.access_service.application.dto import UserDTO, UserConfirmationTokenDTO
-from zametka.access_service.domain.entities.config import UserConfirmationTokenConfig
+from zametka.access_service.application.dto import (
+    UserDTO,
+    UserConfirmationTokenDTO,
+)
+from zametka.access_service.domain.common.timed_user_token import (
+    TimedTokenMetadata,
+)
+from zametka.access_service.domain.entities.config import (
+    UserConfirmationTokenConfig,
+)
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
+from zametka.access_service.domain.services.password_hasher import (
+    PasswordHasher,
+)
+from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId
 from zametka.access_service.domain.value_objects.user_raw_password import (
@@ -32,11 +45,13 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         token_sender: TokenSender,
         uow: UoW,
         config: UserConfirmationTokenConfig,
+        ph: PasswordHasher,
     ):
         self.uow = uow
         self.token_sender = token_sender
         self.user_gateway = user_gateway
         self.config = config
+        self.ph = ph
 
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
         email = UserEmail(data.email)
@@ -47,12 +62,17 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
             user_id,
             email,
             raw_password,
+            self.ph,
         )
 
         user_dto = await self.user_gateway.save(user)
         await self.uow.commit()
 
-        token = UserConfirmationToken(user.user_id, self.config)
+        now = datetime.now(tz=timezone.utc)
+        expires_in = ExpiresIn(now + self.config.expires_after)
+        metadata = TimedTokenMetadata(uid=user.user_id, expires_in=expires_in)
+
+        token = UserConfirmationToken(metadata)
         token_dto = UserConfirmationTokenDTO(
             uid=token.uid.to_raw(),
             expires_in=token.expires_in.to_raw(),

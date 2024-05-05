@@ -1,7 +1,3 @@
-###########
-#  BASE   #
-###########
-
 FROM python:3.11.1-slim-buster as base
 
 WORKDIR /app
@@ -15,32 +11,12 @@ RUN addgroup --system app && adduser --system --group app
 
 RUN pip install uv
 
-###########
-#  VENV   #
-###########
-
-FROM base as venv
-
-RUN uv venv
-
-###########
-# BUILDER #
-###########
-
-FROM venv as builder
-
 COPY ./pyproject.toml $APP_HOME
-RUN uv pip install -e .
 
-#########
-# FINAL #
-#########
-
-FROM builder as production
+RUN uv pip install -e . --system
 
 COPY ./src/ $APP_HOME/src/
 
 RUN chown -R app:app $HOME
 
 USER app
-

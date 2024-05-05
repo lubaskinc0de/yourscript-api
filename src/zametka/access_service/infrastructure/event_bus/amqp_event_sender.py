@@ -4,8 +4,10 @@ from typing import Any
 from adaptix import Retort
 
 from zametka.access_service.infrastructure.event_bus.events import AMQPEvent
-from zametka.access_service.infrastructure.message_broker.interface import MessageBroker
-from zametka.access_service.infrastructure.message_broker.message import Message
+from zametka.access_service.infrastructure.message_broker import (
+    MessageBroker,
+    Message,
+)
 
 
 class AMQPEventSender:

@@ -2,7 +2,9 @@ from datetime import timezone, datetime
 from uuid import UUID
 
 from zametka.access_service.application.dto import AccessTokenDTO
-from zametka.access_service.domain.exceptions.access_token import UnauthorizedError
+from zametka.access_service.domain.exceptions.access_token import (
+    UnauthorizedError,
+)
 
 from zametka.access_service.infrastructure.jwt.jwt_processor import (
     JWTToken,
@@ -28,9 +30,11 @@ class AccessTokenProcessor:
         try:
             payload = self.jwt_processor.decode(token)
             uid = UUID(payload["sub"])
-            expires_in = datetime.fromtimestamp(float(payload["exp"]), timezone.utc)
+            expires_in = datetime.fromtimestamp(
+                float(payload["exp"]), timezone.utc
+            )
 
-            token = AccessTokenDTO(uid=uid, expires_in=expires_in)
-            return token
+            access_token = AccessTokenDTO(uid=uid, expires_in=expires_in)
+            return access_token
         except (JWTDecodeError, ValueError, TypeError, KeyError) as exc:
             raise UnauthorizedError from exc
