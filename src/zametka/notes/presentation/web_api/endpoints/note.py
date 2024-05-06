@@ -29,7 +29,9 @@ async def create(
     ioc: InteractorFactory = Depends(),
     id_provider: IdProvider = Depends(),
 ) -> DBNoteDTO:
-    async with ioc.pick_note_interactor(id_provider, lambda i: i.create) as interactor:
+    async with ioc.pick_note_interactor(
+        id_provider, lambda i: i.create
+    ) as interactor:
         response = await interactor(
             CreateNoteInputDTO(
                 text=note.text,
@@ -46,7 +48,9 @@ async def read(
     ioc: InteractorFactory = Depends(),
     id_provider: IdProvider = Depends(),
 ) -> DBNoteDTO:
-    async with ioc.pick_note_interactor(id_provider, lambda i: i.read) as interactor:
+    async with ioc.pick_note_interactor(
+        id_provider, lambda i: i.read
+    ) as interactor:
         response = await interactor(
             ReadNoteInputDTO(
                 note_id=note_id,
@@ -63,7 +67,9 @@ async def update(
     ioc: InteractorFactory = Depends(),
     id_provider: IdProvider = Depends(),
 ) -> DBNoteDTO:
-    async with ioc.pick_note_interactor(id_provider, lambda i: i.update) as interactor:
+    async with ioc.pick_note_interactor(
+        id_provider, lambda i: i.update
+    ) as interactor:
         response = await interactor(
             UpdateNoteInputDTO(
                 note_id=note_id,
@@ -86,7 +92,9 @@ async def list_notes(
     if search and len(search) > 50:
         raise ValueError("Слишком длинный поисковый запрос!")
 
-    async with ioc.pick_note_interactor(id_provider, lambda i: i.list) as interactor:
+    async with ioc.pick_note_interactor(
+        id_provider, lambda i: i.list
+    ) as interactor:
         response = await interactor(
             ListNotesInputDTO(
                 limit=limit,
@@ -104,7 +112,9 @@ async def delete(
     ioc: InteractorFactory = Depends(),
     id_provider: IdProvider = Depends(),
 ) -> None:
-    async with ioc.pick_note_interactor(id_provider, lambda i: i.delete) as interactor:
+    async with ioc.pick_note_interactor(
+        id_provider, lambda i: i.delete
+    ) as interactor:
         await interactor(
             DeleteNoteInputDTO(
                 note_id=note_id,

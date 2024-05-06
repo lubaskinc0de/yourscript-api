@@ -42,7 +42,7 @@ class UserGatewayImpl(UserSaver, UserReader):
 
         return convert_db_user_to_dto(db_user)
 
-    async def get(self, user_id: UserId) -> Optional[User]:
+    async def with_id(self, user_id: UserId) -> Optional[User]:
         q = select(DBUser).where(DBUser.user_id == user_id.to_raw())
 
         res = await self.session.execute(q)
@@ -53,7 +53,7 @@ class UserGatewayImpl(UserSaver, UserReader):
 
         return convert_db_user_to_entity(user)
 
-    async def get_by_email(self, email: UserEmail) -> Optional[User]:
+    async def with_email(self, email: UserEmail) -> Optional[User]:
         q = select(DBUser).where(DBUser.email == email.to_raw())
 
         res = await self.session.execute(q)

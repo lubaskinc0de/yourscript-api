@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, Any
 
-from zametka.notes.domain.value_objects.note.note_created_at import NoteCreatedAt
+from zametka.notes.domain.value_objects.note.note_created_at import (
+    NoteCreatedAt,
+)
 from zametka.notes.domain.value_objects.note.note_id import NoteId
 from zametka.notes.domain.value_objects.note.note_text import NoteText
 from zametka.notes.domain.value_objects.note.note_title import NoteTitle

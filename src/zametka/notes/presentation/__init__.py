@@ -31,7 +31,7 @@ from zametka.notes.presentation.web_api.exception_handlers.user import (
 
 
 def include_routers(app: FastAPI) -> None:
-    """Include endpoints APIRouters to the main app"""
+    """Include endpoints APIRouters to the bootstrap app"""
 
     logging.info("Routers was included.")
 
@@ -40,18 +40,22 @@ def include_routers(app: FastAPI) -> None:
 
 
 def include_exception_handlers(app: FastAPI) -> None:
-    """Include exceptions handlers to the main app"""
+    """Include exceptions handlers to the bootstrap app"""
 
     logging.info("Exception handlers was included.")
 
     app.add_exception_handler(
         NoteAccessDeniedError, note_access_denied_exception_handler
     )
-    app.add_exception_handler(NoteNotExistsError, note_not_exists_exception_handler)
+    app.add_exception_handler(
+        NoteNotExistsError, note_not_exists_exception_handler
+    )
     app.add_exception_handler(NoteDataError, note_data_exception_handler)
     app.add_exception_handler(UserDataError, user_data_exception_handler)
     app.add_exception_handler(
         UserIsNotExistsError, user_is_not_exists_exception_handler
     )
-    app.add_exception_handler(IsNotAuthorizedError, is_not_authorized_exception_handler)
+    app.add_exception_handler(
+        IsNotAuthorizedError, is_not_authorized_exception_handler
+    )
     app.add_exception_handler(UniqueViolationError, unique_exception_handler)

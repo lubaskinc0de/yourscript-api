@@ -83,9 +83,10 @@ from zametka.access_service.infrastructure.persistence.provider import (
 from zametka.access_service.infrastructure.persistence.uow import SAUnitOfWork
 from zametka.access_service.infrastructure.gateway.user import UserGatewayImpl
 
-from zametka.access_service.main.conf import (
+from zametka.access_service.bootstrap.conf import (
     load_all_config,
 )
+from zametka.access_service.presentation.error_message import ErrorMessage
 from zametka.access_service.presentation.http.jwt.config import TokenAuthConfig
 from zametka.access_service.presentation.http.jwt.token_auth import TokenAuth
 
@@ -138,15 +139,24 @@ def infrastructure_provider() -> Provider:
     return provider
 
 
+def presentation_provider() -> Provider:
+    provider = Provider()
+
+    provider.provide(ErrorMessage, scope=Scope.APP)
+
+    return provider
+
+
 def service_provider() -> Provider:
     provider = Provider()
 
     provider.provide(
         TokenAccessService, scope=Scope.REQUEST, provides=AccessService
     )
-    provider.provide(argon2.PasswordHasher, scope=Scope.APP)
     provider.provide(
-        ArgonPasswordHasher, scope=Scope.APP, provides=PasswordHasher
+        lambda: ArgonPasswordHasher(argon2.PasswordHasher()),
+        scope=Scope.APP,
+        provides=PasswordHasher,
     )
 
     return provider
@@ -257,6 +267,7 @@ def setup_providers() -> list[Provider]:
         infrastructure_provider(),
         config_provider(),
         service_provider(),
+        presentation_provider(),
     ]
     return providers
 
@@ -272,5 +283,5 @@ def setup_http_di() -> AsyncContainer:
     providers = setup_providers()
     providers += [HTTPProvider()]
 
-    container = make_async_container(*providers, skip_validation=True)
+    container = make_async_container(*providers)
     return container

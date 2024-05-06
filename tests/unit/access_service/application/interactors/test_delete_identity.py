@@ -5,7 +5,6 @@ from tests.mocks.access_service.id_provider import FakeIdProvider
 from tests.mocks.access_service.user_gateway import (
     FakeUserGateway,
 )
-from tests.unit.access_service.application.interactors.const import USER_PASSWORD
 from zametka.access_service.application.delete_user import (
     DeleteUser,
     DeleteUserInputDTO,
@@ -16,70 +15,56 @@ from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     InvalidCredentialsError,
 )
+from zametka.access_service.domain.services.password_hasher import (
+    PasswordHasher,
+)
+from zametka.access_service.domain.value_objects.user_raw_password import (
+    UserRawPassword,
+)
 
 
 @pytest.mark.access
 @pytest.mark.application
+@pytest.mark.parametrize(
+    ["user_is_active", "password_startswith", "exc_class"],
+    [
+        (True, "", None),
+        (False, "", UserIsNotActiveError),
+        (True, "blabla", InvalidCredentialsError),
+    ],
+)
 async def test_delete_identity(
     user_gateway: FakeUserGateway,
     id_provider: FakeIdProvider,
     event_emitter: FakeEventEmitter,
+    password_hasher: PasswordHasher,
+    user_password: UserRawPassword,
+    user_is_active: bool,
+    password_startswith: str,
+    exc_class,
 ) -> None:
-    user_gateway.user.is_active = True
+    user_gateway.user.is_active = user_is_active
 
     interactor = DeleteUser(
         id_provider=id_provider,
         event_emitter=event_emitter,
         user_gateway=user_gateway,
+        password_hasher=password_hasher,
     )
 
-    result = await interactor(
+    coro = interactor(
         DeleteUserInputDTO(
-            password=USER_PASSWORD,
+            password=password_startswith + user_password.to_raw(),
         )
     )
 
-    assert result is None
-    assert id_provider.requested is True
-    assert user_gateway.deleted is True
-    assert event_emitter.calls(UserDeletedEvent)
+    if exc_class:
+        with pytest.raises(exc_class):
+            await coro
+    else:
+        result = await coro
 
-
-@pytest.mark.access
-@pytest.mark.application
-async def test_delete_identity_not_active(
-    user_gateway: FakeUserGateway,
-    id_provider: FakeIdProvider,
-    event_emitter: FakeEventEmitter,
-) -> None:
-    interactor = DeleteUser(
-        id_provider=id_provider,
-        event_emitter=event_emitter,
-        user_gateway=user_gateway,
-    )
-
-    with pytest.raises(UserIsNotActiveError):
-        await interactor(
-            DeleteUserInputDTO(
-                password=USER_PASSWORD,
-            )
-        )
-
-
-@pytest.mark.access
-@pytest.mark.application
-async def test_delete_identity_bad_password(
-    user_gateway: FakeUserGateway,
-    id_provider: FakeIdProvider,
-    event_emitter: FakeEventEmitter,
-) -> None:
-    user_gateway.user.is_active = True
-
-    interactor = DeleteUser(
-        id_provider=id_provider,
-        event_emitter=event_emitter,
-        user_gateway=user_gateway,
-    )
-
-    with pytest.raises(InvalidCredentialsError):
-        await interactor(DeleteUserInputDTO(password=USER_PASSWORD + "fake"))
+        assert result is None
+        assert id_provider.requested is True
+        assert user_gateway.deleted is True
+        assert event_emitter.calls(UserDeletedEvent)

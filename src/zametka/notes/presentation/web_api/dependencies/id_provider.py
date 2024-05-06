@@ -5,7 +5,10 @@ from fastapi import Cookie, Request, Depends
 
 from zametka.notes.domain.exceptions.user import IsNotAuthorizedError
 from zametka.notes.domain.value_objects.user.user_id import UserId
-from zametka.notes.infrastructure.id_provider import TokenIdProvider, RawIdProvider
+from zametka.notes.infrastructure.id_provider import (
+    TokenIdProvider,
+    RawIdProvider,
+)
 from zametka.notes.infrastructure.access_api_client import AccessAPIClient
 from zametka.notes.presentation.web_api.dependencies.stub import Stub
 from zametka.notes.presentation.web_api.schemas.user import IdentitySchema

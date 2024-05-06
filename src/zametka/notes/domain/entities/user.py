@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from zametka.notes.domain.value_objects.user.user_first_name import UserFirstName
+from zametka.notes.domain.value_objects.user.user_first_name import (
+    UserFirstName,
+)
 from zametka.notes.domain.value_objects.user.user_id import UserId
 from zametka.notes.domain.value_objects.user.user_joined_at import UserJoinedAt
 from zametka.notes.domain.value_objects.user.user_last_name import UserLastName

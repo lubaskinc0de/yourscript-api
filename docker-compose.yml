@@ -12,7 +12,7 @@ services:
         container_name: backend
         restart: on-failure
         build: .
-        command: fastapi run src/zametka/main/web.py
+        command: fastapi run src/zametka/main/web.py --root-path=/api/
         env_file:
             - .env.access_service
             - .env.notes
@@ -49,7 +49,7 @@ services:
         depends_on:
             db:
                 condition: service_healthy
-        command: [ "zametka" ]
+        command: [ "zametka", "all", "alembic", "upgrade", "head" ]
 
 volumes:
     pg_data:

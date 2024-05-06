@@ -30,7 +30,7 @@ class AccessAPIClient:
             json = await response.json()
 
             if response.status == 200:
-                return UserId(json.get("identity_id"))
+                return UserId(json.with_id("identity_id"))
             else:
                 raise IsNotAuthorizedError()
 

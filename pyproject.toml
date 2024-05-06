@@ -26,7 +26,8 @@ dependencies = [
     'Brotli==1.1.0',
     'adaptix==3.0.0b5',
     'aio-pika==9.3.1',
-    'dishka==1.1.1'
+    'dishka==1.1.1',
+    'PyJWT==2.8.0',
 ]
 
 [project.optional-dependencies]
@@ -55,7 +56,6 @@ markers = [
     'notes: tests related to notes context.',
     'domain: domain tests',
     'application: application tests',
-    'unit: unit tests',
 ]
 filterwarnings = "ignore::DeprecationWarning"
 

@@ -49,14 +49,18 @@ class IoC(InteractorFactory):
 
     @asynccontextmanager
     async def pick_note_interactor(
-        self, id_provider: IdProvider, picker: InteractorPicker[GInputDTO, GOutputDTO]
+        self,
+        id_provider: IdProvider,
+        picker: InteractorPicker[GInputDTO, GOutputDTO],
     ) -> AsyncIterator[InteractorCallable[GInputDTO, GOutputDTO]]:
         async with self._session_factory() as session:
             interactor = self._construct_note_interactor(session, id_provider)
             yield picker(interactor)
 
     @asynccontextmanager
-    async def create_user(self, id_provider: IdProvider) -> AsyncIterator[CreateUser]:
+    async def create_user(
+        self, id_provider: IdProvider
+    ) -> AsyncIterator[CreateUser]:
         async with self._session_factory() as session:
             interactor = CreateUser(
                 user_repository=get_user_repository(session),
@@ -68,7 +72,9 @@ class IoC(InteractorFactory):
             yield interactor
 
     @asynccontextmanager
-    async def get_user(self, id_provider: IdProvider) -> AsyncIterator[GetUser]:
+    async def get_user(
+        self, id_provider: IdProvider
+    ) -> AsyncIterator[GetUser]:
         async with self._session_factory() as session:
             interactor = GetUser(
                 user_repository=get_user_repository(session),

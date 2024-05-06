@@ -4,8 +4,13 @@ import pytest
 from uuid import uuid4
 from zametka.notes.domain.entities.user import User
 
-from zametka.notes.domain.exceptions.user import InvalidUserFirstNameError, InvalidUserLastNameError
-from zametka.notes.domain.value_objects.user.user_first_name import UserFirstName
+from zametka.notes.domain.exceptions.user import (
+    InvalidUserFirstNameError,
+    InvalidUserLastNameError,
+)
+from zametka.notes.domain.value_objects.user.user_first_name import (
+    UserFirstName,
+)
 from zametka.notes.domain.value_objects.user.user_id import UserId
 from zametka.notes.domain.value_objects.user.user_joined_at import UserJoinedAt
 from zametka.notes.domain.value_objects.user.user_last_name import UserLastName
@@ -18,7 +23,7 @@ from zametka.notes.domain.value_objects.user.user_last_name import UserLastName
         "q" * (UserFirstName.MIN_LENGTH - 1),
         "",
         " ",
-        "Ilya1"
+        "Ilya1",
     ],
 )
 def test_create_user_bad_first_name(first_name):
@@ -33,7 +38,7 @@ def test_create_user_bad_first_name(first_name):
         "q" * (UserLastName.MIN_LENGTH - 1),
         "",
         " ",
-        "Lyubavski1"
+        "Lyubavski1",
     ],
 )
 def test_create_user_bad_last_name(last_name):

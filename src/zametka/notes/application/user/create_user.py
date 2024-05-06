@@ -7,7 +7,9 @@ from zametka.notes.application.common.uow import UoW
 from zametka.notes.application.user.dto import UserDTO
 from zametka.notes.domain.entities.user import User
 
-from zametka.notes.domain.value_objects.user.user_first_name import UserFirstName
+from zametka.notes.domain.value_objects.user.user_first_name import (
+    UserFirstName,
+)
 from zametka.notes.domain.value_objects.user.user_last_name import UserLastName
 
 

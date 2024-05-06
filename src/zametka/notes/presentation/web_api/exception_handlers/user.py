@@ -20,7 +20,9 @@ async def unique_exception_handler(
 async def user_data_exception_handler(
     _request: Request, exc: UserDataError
 ) -> responses.JSONResponse:
-    return responses.JSONResponse(status_code=422, content={"detail": exc.message})
+    return responses.JSONResponse(
+        status_code=422, content={"detail": exc.message}
+    )
 
 
 async def user_is_not_exists_exception_handler(

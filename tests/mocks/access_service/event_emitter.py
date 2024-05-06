@@ -11,7 +11,9 @@ class FakeEventEmitter(EventEmitter[EventsT]):
     def __init__(self) -> None:
         self._calls = dict()
 
-    def on(self, event_type: Type[EventsT], handler: EventHandler[EventsT]) -> None:
+    def on(
+        self, event_type: Type[EventsT], handler: EventHandler[EventsT]
+    ) -> None:
         raise NotImplementedError
 
     def calls(self, event_type: Type[EventsT]):

@@ -1,4 +1,4 @@
-from typing import Optional, Protocol
+from typing import Optional
 
 from zametka.access_service.application.common.interactor import Interactor
 from zametka.access_service.application.common.uow import UoW
@@ -20,17 +20,16 @@ from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_id import UserId
 
 
-class UserGateway(UserReader, UserSaver, Protocol): ...
-
-
 class VerifyEmail(Interactor[UserConfirmationTokenDTO, None]):
     def __init__(
         self,
-        user_gateway: UserGateway,
+        user_reader: UserReader,
+        user_saver: UserSaver,
         uow: UoW,
     ):
         self.uow = uow
-        self.user_gateway = user_gateway
+        self.user_reader = user_reader
+        self.user_saver = user_saver
 
     async def __call__(self, data: UserConfirmationTokenDTO) -> None:
         metadata = TimedTokenMetadata(
@@ -38,14 +37,14 @@ class VerifyEmail(Interactor[UserConfirmationTokenDTO, None]):
         )
         token = UserConfirmationToken(metadata)
 
-        user: Optional[User] = await self.user_gateway.get(token.uid)
+        user: Optional[User] = await self.user_reader.with_id(token.uid)
 
         if not user:
             raise UserIsNotExistsError
 
         user.activate(token)
 
-        await self.user_gateway.save(user)
+        await self.user_saver.save(user)
         await self.uow.commit()
 
         return None

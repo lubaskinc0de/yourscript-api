@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from zametka.access_service import presentation as access_presentation
-from zametka.access_service.main import di as access_di
+from zametka.access_service.bootstrap import di as access_di
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,7 +15,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(root_path="/api/")
+app = FastAPI()
 
 logging.info("App was created.")
 

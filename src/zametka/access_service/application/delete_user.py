@@ -27,12 +27,12 @@ class DeleteUser(Interactor[DeleteUserInputDTO, None]):
         user_gateway: UserSaver,
         id_provider: IdProvider,
         event_emitter: EventEmitter[UserDeletedEvent],
-        ph: PasswordHasher,
+        password_hasher: PasswordHasher,
     ):
         self.user_gateway = user_gateway
         self.id_provider = id_provider
         self.event_emitter = event_emitter
-        self.ph = ph
+        self.ph = password_hasher
 
     async def __call__(self, data: DeleteUserInputDTO) -> None:
         user = await self.id_provider.get_user()

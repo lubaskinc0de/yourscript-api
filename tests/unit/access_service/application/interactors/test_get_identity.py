@@ -14,32 +14,33 @@ from zametka.access_service.domain.exceptions.user import UserIsNotActiveError
 
 @pytest.mark.access
 @pytest.mark.application
+@pytest.mark.parametrize(
+    ["user_is_active", "exc_class"],
+    [
+        (True, None),
+        (False, UserIsNotActiveError),
+    ],
+)
 async def test_get_identity(
     user_gateway: FakeUserGateway,
     id_provider: FakeIdProvider,
+    user_is_active: bool,
+    exc_class,
 ) -> None:
-    user_gateway.user.is_active = True
+    user_gateway.user.is_active = user_is_active
 
     interactor = GetUser(
         id_provider=id_provider,
     )
 
-    result = await interactor()
+    coro = interactor()
 
-    assert result is not None
-    assert isinstance(result, UserDTO) is True
-    assert result.user_id == id_provider.user.user_id
-    assert id_provider.requested is True
-
-
-@pytest.mark.access
-@pytest.mark.application
-async def test_get_identity_not_active(
-    id_provider: FakeIdProvider,
-) -> None:
-    interactor = GetUser(
-        id_provider=id_provider,
-    )
-
-    with pytest.raises(UserIsNotActiveError):
-        await interactor()
+    if not exc_class:
+        result = await coro
+        assert result is not None
+        assert isinstance(result, UserDTO) is True
+        assert result.user_id == id_provider.user.user_id
+        assert id_provider.requested is True
+    else:
+        with pytest.raises(exc_class):
+            await coro

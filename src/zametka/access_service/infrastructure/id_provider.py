@@ -39,7 +39,7 @@ class TokenIdProvider(IdProvider):
 
     async def get_user(self) -> User:
         user_id = self._get_id()
-        user = await self._user_gateway.get(user_id)
+        user = await self._user_gateway.with_id(user_id)
 
         if not user:
             raise UnauthorizedError from UserIsNotExistsError

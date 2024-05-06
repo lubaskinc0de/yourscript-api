@@ -43,7 +43,7 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
         self.ph = password_hasher
 
     async def __call__(self, data: AuthorizeInputDTO) -> AccessTokenDTO:
-        user: Optional[User] = await self.user_gateway.get_by_email(
+        user: Optional[User] = await self.user_gateway.with_email(
             UserEmail(data.email)
         )
 

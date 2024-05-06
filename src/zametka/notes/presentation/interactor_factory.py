@@ -20,14 +20,20 @@ InteractorPicker: TypeAlias = Callable[
 class InteractorFactory(ABC):
     @abstractmethod
     def pick_note_interactor(
-        self, id_provider: IdProvider, picker: InteractorPicker[GInputDTO, GOutputDTO]
+        self,
+        id_provider: IdProvider,
+        picker: InteractorPicker[GInputDTO, GOutputDTO],
     ) -> AsyncContextManager[InteractorCallable[GInputDTO, GOutputDTO]]:
         raise NotImplementedError
 
     @abstractmethod
-    def create_user(self, id_provider: IdProvider) -> AsyncContextManager[CreateUser]:
+    def create_user(
+        self, id_provider: IdProvider
+    ) -> AsyncContextManager[CreateUser]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_user(self, id_provider: IdProvider) -> AsyncContextManager[GetUser]:
+    def get_user(
+        self, id_provider: IdProvider
+    ) -> AsyncContextManager[GetUser]:
         raise NotImplementedError

@@ -1,6 +1,9 @@
 from typing import Optional
 
-from zametka.access_service.application.common.user_gateway import UserReader, UserSaver
+from zametka.access_service.application.common.user_gateway import (
+    UserReader,
+    UserSaver,
+)
 from zametka.access_service.application.dto import UserDTO
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.value_objects.user_email import UserEmail
@@ -24,13 +27,13 @@ class FakeUserGateway(UserReader, UserSaver):
             user_id=self.user.user_id.to_raw(),
         )
 
-    async def get(self, user_id: UserId) -> Optional[User]:
+    async def with_id(self, user_id: UserId) -> Optional[User]:
         if not self.user.user_id == user_id:
             return None
 
         return self.user
 
-    async def get_by_email(self, email: UserEmail) -> Optional[User]:
+    async def with_email(self, email: UserEmail) -> Optional[User]:
         if not self.user.email == email:
             return None
 

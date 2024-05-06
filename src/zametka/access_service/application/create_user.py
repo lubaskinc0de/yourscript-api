@@ -45,13 +45,13 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         token_sender: TokenSender,
         uow: UoW,
         config: UserConfirmationTokenConfig,
-        ph: PasswordHasher,
+        password_hasher: PasswordHasher,
     ):
         self.uow = uow
         self.token_sender = token_sender
         self.user_gateway = user_gateway
         self.config = config
-        self.ph = ph
+        self.ph = password_hasher
 
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
         email = UserEmail(data.email)
