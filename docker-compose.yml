@@ -14,9 +14,9 @@ services:
         build: .
         command: fastapi run src/zametka/main/web.py --root-path=/api/
         env_file:
-            - .env.access_service
-            - .env.notes
-            - .env
+            - /usr/local/etc/zametka/.env.access_service
+            - /usr/local/etc/zametka/.env
+            - /usr/local/etc/zametka/.env.notes
         volumes:
             - ./src/zametka/access_service/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/access_service/infrastructure/persistence/alembic/migrations/versions
             - ./src/zametka/notes/infrastructure/persistence/alembic/migrations/versions:/home/app/backend/src/zametka/notes/infrastructure/persistence/alembic/migrations/versions
@@ -29,7 +29,7 @@ services:
         volumes:
             - pg_data:/var/lib/postgresql/data/
         env_file:
-            - .env
+            - /usr/local/etc/zametka/.env
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -d access_database -U $${POSTGRES_USER}",
                     "CMD-SHELL", "pg_isready -d notes_database -U $${POSTGRES_USER}" ]
@@ -43,9 +43,9 @@ services:
         build: .
         restart: on-failure
         env_file:
-            - .env.access_service
-            - .env
-            - .env.notes
+            - /usr/local/etc/zametka/.env.access_service
+            - /usr/local/etc/zametka/.env
+            - /usr/local/etc/zametka/.env.notes
         depends_on:
             db:
                 condition: service_healthy

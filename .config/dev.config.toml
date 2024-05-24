@@ -3,7 +3,7 @@ frontend-url = 'http://localhost:5173'
 
 [email]
 activation-mail-subject = 'ЗАВЕРШИТЕ РЕГИСТРАЦИЮ В ZAMETKA'
-activation-url-template = 'http://localhost:5173/verify?token={}'
+activation-url-template = '{frontend_url}/verify?token={token}'
 activation-email-template-path = 'zametka.access_service.presentation.http'
 activation-email-template-name = 'confirmation-mail.html'
 
@@ -14,9 +14,9 @@ port = 465
 
 [security]
 algorithm = 'HS256'
-access-token-expires-minutes = 15
+access-token-expires-minutes = 5
 confirmation-token-expires-minutes = 5
-access-cookie-expires-days = 15
+refresh-token-expires-days = 15
 
 [auth]
 auth-token-key = 'Token'

@@ -4,7 +4,7 @@ from zametka.access_service.application.common.id_provider import (
     IdProvider,
 )
 from zametka.access_service.application.common.user_gateway import UserReader
-from zametka.access_service.domain.common.access_service import AccessService
+from zametka.access_service.domain.common.services.access_service import AccessService
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.access_token import (

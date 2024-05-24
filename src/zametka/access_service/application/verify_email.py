@@ -7,7 +7,7 @@ from zametka.access_service.application.common.user_gateway import (
     UserSaver,
 )
 from zametka.access_service.application.dto import UserConfirmationTokenDTO
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 from zametka.access_service.domain.entities.user import User

@@ -74,7 +74,54 @@ check_untyped_defs = true
 ignore_missing_imports = false
 
 [tool.ruff]
-line-length = 79
+line-length = 88
+
+[tool.ruff.lint]
+select = ['ALL']
+
+ignore = [
+  # Rules that should be turned on in the near future
+  'N818',
+  'B904',
+  'FIX002',
+  'RUF012',
+
+  # Rules emitting false alerts
+  'N804',
+  'B008',
+  'BLE001',
+  'RUF009',
+
+  # Rules that are not applicable in the project for now
+  'D',
+  'TID252',
+  'D104',
+  'ANN',
+  'SLF001',
+  'ARG',
+  'D100',
+  'PLR0913',
+  'TCH002',
+  'EXE002',
+
+  # Strange and obscure rules that will never be turned on
+  'ANN101',
+  'FA100',
+  'TRY003',
+  'TRY201',
+  'EM',
+  'PERF203',
+  'TCH001',
+  'TD002',
+  'PTH201',
+  'RSE102',
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ['F401']
+
+"test_*" = ['S101', 'PLR2004', 'PT023', 'PT001', 'PT006']
+"conftest.py" = ['PT023', 'PT001', 'PT006']
 
 [[project.authors]]
 name = 'lubaskinc0de'

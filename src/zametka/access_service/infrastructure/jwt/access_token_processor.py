@@ -30,9 +30,7 @@ class AccessTokenProcessor:
         try:
             payload = self.jwt_processor.decode(token)
             uid = UUID(payload["sub"])
-            expires_in = datetime.fromtimestamp(
-                float(payload["exp"]), timezone.utc
-            )
+            expires_in = datetime.fromtimestamp(float(payload["exp"]), timezone.utc)
 
             access_token = AccessTokenDTO(uid=uid, expires_in=expires_in)
             return access_token

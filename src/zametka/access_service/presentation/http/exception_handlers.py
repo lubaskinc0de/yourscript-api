@@ -10,9 +10,7 @@ from zametka.access_service.presentation.http.http_error_code import (
 )
 
 
-def get_http_error_response(
-    err: AppError, error_message: ErrorMessage
-) -> JSONResponse:
+def get_http_error_response(err: AppError, error_message: ErrorMessage) -> JSONResponse:
     err_type = type(err)
     err_code = ErrorCode(err_type)
     err_message = error_message.get_error_message(err_code)
@@ -27,9 +25,7 @@ def get_http_error_response(
     )
 
 
-async def app_exception_handler(
-    request: Request, exc: Exception
-) -> JSONResponse:
+async def app_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     if not isinstance(exc, AppError):
         ...  # TODO: handle unknown exc
         return JSONResponse(status_code=500, content={})

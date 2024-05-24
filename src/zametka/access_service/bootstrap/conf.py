@@ -70,9 +70,7 @@ def load_all_config() -> AllConfig:
         jwt_algorithm = cfg["security"]["algorithm"]
         jwt_token_key = cfg["auth"]["auth-token-key"]
 
-        access_token_expires_after = cfg["security"][
-            "access-token-expires-minutes"
-        ]
+        access_token_expires_after = cfg["security"]["access-token-expires-minutes"]
         confirmation_token_expires_after = cfg["security"][
             "confirmation-token-expires-minutes"
         ]

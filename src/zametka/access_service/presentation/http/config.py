@@ -31,7 +31,5 @@ def load_authjwt_config() -> AuthJWTConfig:
         authjwt_access_token_expires=timedelta(
             minutes=int(os.environ["AUTHJWT_TOKEN_EXPIRES_MINUTES"])
         ),
-        authjwt_cookie_expires=int(
-            os.environ["AUTHJWT_COOKIE_EXPIRES_SECONDS"]
-        ),
+        authjwt_cookie_expires=int(os.environ["AUTHJWT_COOKIE_EXPIRES_SECONDS"]),
     )

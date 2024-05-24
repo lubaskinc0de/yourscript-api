@@ -44,9 +44,7 @@ class RMQMessageBroker(MessageBroker):
         await self._publish_message(rq_message, routing_key, exchange_name)
 
     async def declare_exchange(self, exchange_name: str) -> None:
-        await self._channel.declare_exchange(
-            exchange_name, aio_pika.ExchangeType.TOPIC
-        )
+        await self._channel.declare_exchange(exchange_name, aio_pika.ExchangeType.TOPIC)
 
     async def _publish_message(
         self,
@@ -59,7 +57,5 @@ class RMQMessageBroker(MessageBroker):
 
         logging.info("Message sent", extra={"rq_message": rq_message})
 
-    async def _get_exchange(
-        self, exchange_name: str
-    ) -> aio_pika.abc.AbstractExchange:
+    async def _get_exchange(self, exchange_name: str) -> aio_pika.abc.AbstractExchange:
         return await self._channel.get_exchange(exchange_name, ensure=False)

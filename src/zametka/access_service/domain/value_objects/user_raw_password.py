@@ -5,7 +5,6 @@ from zametka.access_service.domain.common.value_objects.base import ValueObject
 from zametka.access_service.domain.exceptions.user import WeakPasswordError
 
 
-@dataclass(frozen=True)
 class UserRawPassword(ValueObject[str]):
     value: str
 
@@ -21,9 +20,7 @@ class UserRawPassword(ValueObject[str]):
             "Пароль не должен состоять только из заглавных букв.": lambda s: any(
                 x.islower() for x in s
             ),
-            "Пароль должен содержать число.": lambda s: any(
-                x.isdigit() for x in s
-            ),
+            "Пароль должен содержать число.": lambda s: any(x.isdigit() for x in s),
             "Пароль не должен содержать пробелы.": lambda s: not any(
                 x.isspace() for x in s
             ),

@@ -47,15 +47,11 @@ def include_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         NoteAccessDeniedError, note_access_denied_exception_handler
     )
-    app.add_exception_handler(
-        NoteNotExistsError, note_not_exists_exception_handler
-    )
+    app.add_exception_handler(NoteNotExistsError, note_not_exists_exception_handler)
     app.add_exception_handler(NoteDataError, note_data_exception_handler)
     app.add_exception_handler(UserDataError, user_data_exception_handler)
     app.add_exception_handler(
         UserIsNotExistsError, user_is_not_exists_exception_handler
     )
-    app.add_exception_handler(
-        IsNotAuthorizedError, is_not_authorized_exception_handler
-    )
+    app.add_exception_handler(IsNotAuthorizedError, is_not_authorized_exception_handler)
     app.add_exception_handler(UniqueViolationError, unique_exception_handler)

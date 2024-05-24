@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
@@ -13,13 +13,9 @@ class TimedTokenMetadata:
     expires_in: ExpiresIn
 
 
+@dataclass(frozen=True)
 class TimedUserToken(ABC):
-    __slots__ = ("metadata",)
-
     metadata: TimedTokenMetadata
-
-    def __init__(self, metadata: TimedTokenMetadata) -> None:
-        self.metadata = metadata
 
     @property
     def expires_in(self) -> ExpiresIn:

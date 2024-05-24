@@ -35,9 +35,7 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         last_name = UserLastName(data.last_name)
         user_id = await self.id_provider.get_user_id()
 
-        user = User(
-            first_name=first_name, last_name=last_name, user_id=user_id
-        )
+        user = User(first_name=first_name, last_name=last_name, user_id=user_id)
 
         user_dto = await self.user_repository.create(user)
 

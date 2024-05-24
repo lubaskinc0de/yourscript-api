@@ -1,4 +1,6 @@
-from zametka.access_service.domain.common.timed_user_token import (
+from dataclasses import dataclass
+
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedUserToken,
 )
 from zametka.access_service.domain.exceptions.confirmation_token import (

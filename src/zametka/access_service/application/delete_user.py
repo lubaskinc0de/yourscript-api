@@ -7,9 +7,7 @@ from zametka.access_service.application.common.user_gateway import (
     UserSaver,
 )
 from zametka.access_service.application.dto import UserDeletedEvent
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,

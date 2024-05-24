@@ -29,15 +29,15 @@ from zametka.access_service.application.create_user import CreateUser
 from zametka.access_service.application.delete_user import DeleteUser
 from zametka.access_service.application.get_user import GetUser
 from zametka.access_service.application.verify_email import VerifyEmail
-from zametka.access_service.domain.common.access_service import AccessService
+from zametka.access_service.domain.common.services.access_service import AccessService
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import (
     AccessTokenConfig,
     UserConfirmationTokenConfig,
 )
-from zametka.access_service.domain.services.password_hasher import (
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
+from zametka.access_service.infrastructure.auth.password_hasher import (
     ArgonPasswordHasher,
-    PasswordHasher,
 )
 from zametka.access_service.domain.services.token_access_service import (
     TokenAccessService,
@@ -129,9 +129,7 @@ def interactor_provider() -> Provider:
 def infrastructure_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(
-        EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter
-    )
+    provider.provide(EventEmitterImpl, scope=Scope.REQUEST, provides=EventEmitter)
     provider.provide(PyJWTProcessor, scope=Scope.APP, provides=JWTProcessor)
     provider.provide(ConfirmationTokenProcessor, scope=Scope.APP)
     provider.provide(AccessTokenProcessor, scope=Scope.APP)
@@ -150,9 +148,7 @@ def presentation_provider() -> Provider:
 def service_provider() -> Provider:
     provider = Provider()
 
-    provider.provide(
-        TokenAccessService, scope=Scope.REQUEST, provides=AccessService
-    )
+    provider.provide(TokenAccessService, scope=Scope.REQUEST, provides=AccessService)
     provider.provide(
         lambda: ArgonPasswordHasher(argon2.PasswordHasher()),
         scope=Scope.APP,

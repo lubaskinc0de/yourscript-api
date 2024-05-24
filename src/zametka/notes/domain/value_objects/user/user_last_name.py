@@ -15,13 +15,9 @@ class UserLastName(ValueObject[str]):
 
     def _validate(self) -> None:
         if len(self.value) > self.MAX_LENGTH:
-            raise InvalidUserLastNameError(
-                "Фамилия пользователя слишком длинная!"
-            )
+            raise InvalidUserLastNameError("Фамилия пользователя слишком длинная!")
         if len(self.value) < self.MIN_LENGTH:
-            raise InvalidUserLastNameError(
-                "Фамилия пользователя слишком короткая!"
-            )
+            raise InvalidUserLastNameError("Фамилия пользователя слишком короткая!")
         if not self.value:
             raise InvalidUserLastNameError("Поле не может быть пустым!")
         if bool(re.search(r"\d", self.value)):

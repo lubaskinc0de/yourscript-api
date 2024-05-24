@@ -14,9 +14,7 @@ from zametka.access_service.domain.exceptions.user import (
     WeakPasswordError,
     InvalidUserEmailError,
 )
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
@@ -60,9 +58,7 @@ def test_activate_user_bad_token(exc_class, fixture_name, user: User, request):
 
 @pytest.mark.access
 @pytest.mark.domain
-def test_activate_user_twice(
-    user: User, confirmation_token: UserConfirmationToken
-):
+def test_activate_user_twice(user: User, confirmation_token: UserConfirmationToken):
     user.activate(confirmation_token)
 
     with pytest.raises(ConfirmationTokenAlreadyUsedError):

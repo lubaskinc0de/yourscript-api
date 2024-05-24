@@ -4,7 +4,7 @@ from uuid import uuid4
 import argon2
 import pytest
 
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 from zametka.access_service.domain.entities.config import (
@@ -15,9 +15,9 @@ from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.domain.services.password_hasher import (
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
+from zametka.access_service.infrastructure.auth.password_hasher import (
     ArgonPasswordHasher,
-    PasswordHasher,
 )
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_email import UserEmail
@@ -118,9 +118,7 @@ def expired_confirmation_token(
 ):
     metadata = TimedTokenMetadata(
         uid=user.user_id,
-        expires_in=ExpiresIn(
-            datetime.now(tz=timezone.utc) - timedelta(days=1)
-        ),
+        expires_in=ExpiresIn(datetime.now(tz=timezone.utc) - timedelta(days=1)),
     )
     token = UserConfirmationToken(metadata)
 

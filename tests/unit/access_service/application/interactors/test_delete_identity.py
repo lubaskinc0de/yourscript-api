@@ -15,9 +15,7 @@ from zametka.access_service.domain.exceptions.user import (
     UserIsNotActiveError,
     InvalidCredentialsError,
 )
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )

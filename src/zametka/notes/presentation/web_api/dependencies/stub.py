@@ -28,8 +28,7 @@ class Stub:
     def __eq__(self, other: "Stub | Any") -> bool:
         if isinstance(other, Stub):
             return (
-                self._dependency == other._dependency
-                and self._kwargs == other._kwargs
+                self._dependency == other._dependency and self._kwargs == other._kwargs
             )
         else:
             if not self._kwargs:

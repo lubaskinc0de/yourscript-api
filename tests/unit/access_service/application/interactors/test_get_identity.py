@@ -39,6 +39,7 @@ async def test_get_identity(
         result = await coro
         assert result is not None
         assert isinstance(result, UserDTO) is True
+        print(id_provider.user.user_id.__eq__(result.user_id))
         assert result.user_id == id_provider.user.user_id
         assert id_provider.requested is True
     else:

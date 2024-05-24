@@ -30,9 +30,7 @@ class ConfirmationTokenProcessor:
         try:
             payload = self.jwt_processor.decode(token)
             uid = UUID(payload["sub"])
-            expires_in = datetime.fromtimestamp(
-                float(payload["exp"]), timezone.utc
-            )
+            expires_in = datetime.fromtimestamp(float(payload["exp"]), timezone.utc)
 
             confirmation_token = UserConfirmationTokenDTO(
                 uid=uid, expires_in=expires_in

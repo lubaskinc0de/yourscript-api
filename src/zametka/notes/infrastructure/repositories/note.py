@@ -82,9 +82,7 @@ class NoteRepositoryImpl(NoteRepository):
 
         return note_db_data_to_db_note_dto(note)
 
-    async def list(
-        self, limit: int, offset: int, author_id: UserId
-    ) -> ListNotesDTO:
+    async def list(self, limit: int, offset: int, author_id: UserId) -> ListNotesDTO:
         """List"""
 
         q = (
@@ -117,9 +115,7 @@ class NoteRepositoryImpl(NoteRepository):
         columns = func.coalesce(Note.title, "")
         columns = columns.self_group()  # type:ignore
 
-        await self.session.execute(
-            text("SET pg_trgm.similarity_threshold=0.2")
-        )
+        await self.session.execute(text("SET pg_trgm.similarity_threshold=0.2"))
 
         q = (
             select(Note.title, Note.note_id, func.similarity(columns, query))

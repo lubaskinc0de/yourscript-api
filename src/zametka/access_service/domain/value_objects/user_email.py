@@ -9,7 +9,6 @@ from zametka.access_service.domain.common.value_objects.base import ValueObject
 from zametka.access_service.domain.exceptions.user import InvalidUserEmailError
 
 
-@dataclass(frozen=True)
 class UserEmail(ValueObject[str]):
     value: str
 
@@ -21,8 +20,3 @@ class UserEmail(ValueObject[str]):
             validate_email(self.value, check_deliverability=False)
         except EmailNotValidError as exc:
             raise InvalidUserEmailError from exc
-
-    def __eq__(self, other: Union[UserEmail, object]) -> bool:
-        if not isinstance(other, UserEmail):
-            return other == self.to_raw()
-        return self.to_raw() == other.to_raw()

@@ -21,3 +21,8 @@ class ValueObject(BaseValueObject, ABC, Generic[V]):
 
     def to_raw(self) -> V:
         return self.value
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, self.__class__):
+            return self.value == other
+        return self.value == other.value

@@ -4,14 +4,12 @@ from typing import Optional
 
 from zametka.access_service.application.common.user_gateway import UserReader
 from zametka.access_service.application.dto import AccessTokenDTO
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import AccessTokenConfig
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.application.common.interactor import Interactor
@@ -43,9 +41,7 @@ class Authorize(Interactor[AuthorizeInputDTO, AccessTokenDTO]):
         self.ph = password_hasher
 
     async def __call__(self, data: AuthorizeInputDTO) -> AccessTokenDTO:
-        user: Optional[User] = await self.user_gateway.with_email(
-            UserEmail(data.email)
-        )
+        user: Optional[User] = await self.user_gateway.with_email(UserEmail(data.email))
 
         if not user:
             raise UserIsNotExistsError()

@@ -14,9 +14,7 @@ from zametka.access_service.application.dto import UserDTO
 from zametka.access_service.domain.entities.config import (
     UserConfirmationTokenConfig,
 )
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,

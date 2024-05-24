@@ -16,16 +16,10 @@ class UserFirstName(ValueObject[str]):
 
     def _validate(self) -> None:
         if len(self.value) > self.MAX_LENGTH:
-            raise InvalidUserFirstNameError(
-                "Имя пользователя слишком длинное!"
-            )
+            raise InvalidUserFirstNameError("Имя пользователя слишком длинное!")
         if len(self.value) < self.MIN_LENGTH:
-            raise InvalidUserFirstNameError(
-                "Имя пользователя слишком короткое!"
-            )
+            raise InvalidUserFirstNameError("Имя пользователя слишком короткое!")
         if not self.value:
             raise InvalidUserFirstNameError("Поле не может быть пустым!")
         if bool(re.search(r"\d", self.value)) and not self.ALLOW_DIGITS:
-            raise InvalidUserFirstNameError(
-                "Имя пользователя не может содержать цифр!"
-            )
+            raise InvalidUserFirstNameError("Имя пользователя не может содержать цифр!")

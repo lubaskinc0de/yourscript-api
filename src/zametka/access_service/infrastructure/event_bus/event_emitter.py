@@ -13,21 +13,15 @@ class EventEmitterImpl(EventEmitter[EventsT]):
     def __init__(self) -> None:
         self._events = dict()
 
-    def on(
-        self, event_type: Type[EventsT], handler: EventHandler[EventsT]
-    ) -> None:
+    def on(self, event_type: Type[EventsT], handler: EventHandler[EventsT]) -> None:
         existing_handlers = self._events.get(event_type)
 
         self._events[event_type] = (
-            [handler]
-            if not existing_handlers
-            else existing_handlers + [handler]
+            [handler] if not existing_handlers else existing_handlers + [handler]
         )
 
     async def emit(self, event: EventsT) -> None:
-        handlers: Optional[list[EventHandler[EventsT]]] = self._events.get(
-            type(event)
-        )
+        handlers: Optional[list[EventHandler[EventsT]]] = self._events.get(type(event))
 
         if not handlers:
             return None

@@ -1,6 +1,6 @@
 from fastapi import Request, Response
 
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 from zametka.access_service.domain.entities.access_token import AccessToken
@@ -35,11 +35,7 @@ class TokenAuth:
         cookies_token = cookies.get(token_key)
         headers_token = headers.get(token_key)
 
-        if (
-            not cookies_token
-            or not headers_token
-            or cookies_token != headers_token
-        ):
+        if not cookies_token or not headers_token or cookies_token != headers_token:
             raise UnauthorizedError
 
         token = self.token_processor.decode(cookies_token)
@@ -51,8 +47,6 @@ class TokenAuth:
 
         return access_token
 
-    def set_access_cookie(
-        self, token: JWTToken, response: Response
-    ) -> Response:
+    def set_access_cookie(self, token: JWTToken, response: Response) -> Response:
         response.set_cookie(self.config.token_key, token)
         return response

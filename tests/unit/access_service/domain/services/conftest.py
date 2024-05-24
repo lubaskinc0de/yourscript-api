@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 

@@ -13,9 +13,7 @@ class Note(Base):
 
     __tablename__ = "notes"
 
-    note_id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, autoincrement=True
-    )
+    note_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(50), nullable=False)
     text: Mapped[Optional[str]] = mapped_column(String(60000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)

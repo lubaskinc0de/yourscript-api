@@ -11,7 +11,7 @@ from zametka.access_service.application.dto import (
     UserDTO,
     UserConfirmationTokenDTO,
 )
-from zametka.access_service.domain.common.timed_user_token import (
+from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
 from zametka.access_service.domain.entities.config import (
@@ -21,9 +21,7 @@ from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
-from zametka.access_service.domain.services.password_hasher import (
-    PasswordHasher,
-)
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_id import UserId

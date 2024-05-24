@@ -27,9 +27,7 @@ class NoteRepository(Protocol):
         """Update"""
 
     @abstractmethod
-    async def list(
-        self, limit: int, offset: int, author_id: UserId
-    ) -> ListNotesDTO:
+    async def list(self, limit: int, offset: int, author_id: UserId) -> ListNotesDTO:
         """List"""
 
     @abstractmethod

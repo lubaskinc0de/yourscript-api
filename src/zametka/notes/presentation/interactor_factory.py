@@ -27,13 +27,9 @@ class InteractorFactory(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def create_user(
-        self, id_provider: IdProvider
-    ) -> AsyncContextManager[CreateUser]:
+    def create_user(self, id_provider: IdProvider) -> AsyncContextManager[CreateUser]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_user(
-        self, id_provider: IdProvider
-    ) -> AsyncContextManager[GetUser]:
+    def get_user(self, id_provider: IdProvider) -> AsyncContextManager[GetUser]:
         raise NotImplementedError

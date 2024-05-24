@@ -23,9 +23,7 @@ def amqp_event(
 ) -> Callable[[EventType], EventType]:
     def _amqp_event(cls: EventType) -> EventType:
         cls.exchange_name = exchange
-        cls.routing_key = (
-            routing_key if routing_key is not None else cls.event_type
-        )
+        cls.routing_key = routing_key if routing_key is not None else cls.event_type
         return cls
 
     return _amqp_event
