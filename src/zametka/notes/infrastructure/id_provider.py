@@ -1,7 +1,6 @@
-from zametka.notes.infrastructure.access_api_client import AccessAPIClient
 from zametka.notes.application.common.id_provider import IdProvider
-
 from zametka.notes.domain.value_objects.user.user_id import UserId
+from zametka.notes.infrastructure.access_api_client import AccessAPIClient
 
 
 class RawIdProvider(IdProvider):

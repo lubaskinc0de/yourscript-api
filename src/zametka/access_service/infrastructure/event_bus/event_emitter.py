@@ -1,5 +1,3 @@
-from typing import Optional, Type
-
 from zametka.access_service.application.common.event import (
     EventEmitter,
     EventHandler,
@@ -8,23 +6,24 @@ from zametka.access_service.application.common.event import (
 
 
 class EventEmitterImpl(EventEmitter[EventsT]):
-    _events: dict[Type[EventsT], list[EventHandler[EventsT]]]
+    _events: dict[type[EventsT], list[EventHandler[EventsT]]]
 
     def __init__(self) -> None:
-        self._events = dict()
+        self._events = {}
 
-    def on(self, event_type: Type[EventsT], handler: EventHandler[EventsT]) -> None:
+    def on(self, event_type: type[EventsT], handler: EventHandler[EventsT]) -> None:
         existing_handlers = self._events.get(event_type)
 
-        self._events[event_type] = (
-            [handler] if not existing_handlers else existing_handlers + [handler]
-        )
+        if not existing_handlers:
+            self._events[event_type] = [handler]
+        else:
+            self._events[event_type] = [handler, *existing_handlers]
 
     async def emit(self, event: EventsT) -> None:
-        handlers: Optional[list[EventHandler[EventsT]]] = self._events.get(type(event))
+        handlers: list[EventHandler[EventsT]] | None = self._events.get(type(event))
 
         if not handlers:
-            return None
+            return
 
         for handler in handlers:
             await handler(event)

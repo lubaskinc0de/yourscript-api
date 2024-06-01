@@ -1,22 +1,23 @@
-import alembic.config
 import sys
 
-from zametka.notes.infrastructure.db.alembic.config import (
-    ALEMBIC_CONFIG as NOTES_ALEMBIC,
-)
+import alembic.config
+
 from zametka.access_service.infrastructure.persistence.alembic.config import (
     ALEMBIC_CONFIG as ACCESS_SERVICE_ALEMBIC,
+)
+from zametka.notes.infrastructure.db.alembic.config import (
+    ALEMBIC_CONFIG as NOTES_ALEMBIC,
 )
 
 
 def notes_alembic_handler(args: list[str]) -> None:
-    alembic.config.main(  # type:ignore
+    alembic.config.main(
         argv=["-c", NOTES_ALEMBIC, *args],
     )
 
 
 def access_service_alembic_handler(args: list[str]) -> None:
-    alembic.config.main(  # type:ignore
+    alembic.config.main(
         argv=["-c", ACCESS_SERVICE_ALEMBIC, *args],
     )
 
@@ -33,7 +34,7 @@ def main() -> None:
 
     if not argv:
         print(">> Hi, my friend.")
-        return None
+        return
 
     try:
         module = argv[0]
@@ -41,7 +42,7 @@ def main() -> None:
         args = argv[2:]
     except IndexError:
         print(">> Invalid option!")
-        return None
+        return
 
     modules = {
         "notes": {
@@ -57,10 +58,10 @@ def main() -> None:
 
     if module not in modules:
         print(">> No such module.")
-        return None
+        return
 
     if option not in modules[module]:
         print(">> No such option.")
-        return None
+        return
 
     modules[module][option](args)

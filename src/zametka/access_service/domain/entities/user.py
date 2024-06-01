@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
@@ -12,10 +13,9 @@ from zametka.access_service.domain.exceptions.password_hasher import (
     PasswordMismatchError,
 )
 from zametka.access_service.domain.exceptions.user import (
-    UserIsNotActiveError,
     InvalidCredentialsError,
+    UserIsNotActiveError,
 )
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_hashed_password import (
     UserHashedPassword,
@@ -49,7 +49,9 @@ class User:
             raise UserIsNotActiveError
 
     def authenticate(
-        self, raw_password: UserRawPassword, password_hasher: PasswordHasher
+        self,
+        raw_password: UserRawPassword,
+        password_hasher: PasswordHasher,
     ) -> None:
         try:
             password_hasher.verify_password(raw_password, self.hashed_password)
@@ -79,9 +81,10 @@ class User:
         return self.user_id == other.user_id
 
     def __repr__(self) -> str:
-        return "{} object(id={}, is_active={})".format(
-            self.__class__.__qualname__, self.user_id, bool(self)
+        return (
+            f"{self.__class__.__qualname__} object(id={self.user_id}, is_active"
+            f"={bool(self)})"
         )
 
     def __str__(self) -> str:
-        return "{} <{}>".format(self.__class__.__qualname__, self.user_id)
+        return f"{self.__class__.__qualname__} <{self.user_id}>"

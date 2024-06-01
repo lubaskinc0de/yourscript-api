@@ -1,7 +1,6 @@
-import pytest
-
 from uuid import uuid4
 
+import pytest
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.access_token import (

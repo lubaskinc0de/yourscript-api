@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from email_validator import EmailNotValidError, validate_email
 
-from dataclasses import dataclass
-from typing import Union
-
 from zametka.access_service.domain.common.value_objects.base import ValueObject
 from zametka.access_service.domain.exceptions.user import InvalidUserEmailError
 

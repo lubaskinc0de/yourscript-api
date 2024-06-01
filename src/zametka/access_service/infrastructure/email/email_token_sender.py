@@ -1,5 +1,4 @@
 import logging
-
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -7,10 +6,9 @@ from jinja2 import Environment
 
 from zametka.access_service.application.common.token_sender import TokenSender
 from zametka.access_service.application.dto import UserConfirmationTokenDTO
-
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.infrastructure.email.config import (
-    ActivationEmailConfig,
+    ConfirmationEmailConfig,
 )
 from zametka.access_service.infrastructure.email.email_client import (
     EmailClient,
@@ -25,7 +23,7 @@ class EmailTokenSender(TokenSender):
         self,
         client: EmailClient,
         jinja: Environment,
-        config: ActivationEmailConfig,
+        config: ConfirmationEmailConfig,
         token_processor: ConfirmationTokenProcessor,
     ) -> None:
         self.client = client
@@ -36,9 +34,14 @@ class EmailTokenSender(TokenSender):
     def _render_html(self, token: UserConfirmationTokenDTO) -> str:
         template = self.jinja.get_template(self.config.template_name)
         jwt_token = self.token_processor.encode(token)
+        link = self.config.confirmation_link.format_map(
+            {
+                "token": jwt_token,
+            },
+        )
 
         rendered: str = template.render(
-            token_link=self.config.activation_url.format(jwt_token)
+            token_link=link,
         )
 
         return rendered

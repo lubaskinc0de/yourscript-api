@@ -1,4 +1,5 @@
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 
 class Stub:
@@ -17,7 +18,7 @@ class Stub:
     """
 
     def __init__(
-        self, dependency: Callable[[Any], Any], **kwargs: dict[str, Any]
+        self, dependency: Callable[[Any], Any], **kwargs: dict[str, Any],
     ) -> None:
         self._dependency = dependency
         self._kwargs = kwargs
@@ -30,10 +31,10 @@ class Stub:
             return (
                 self._dependency == other._dependency and self._kwargs == other._kwargs
             )
-        else:
-            if not self._kwargs:
-                return self._dependency == other  # type:ignore
-            return False
+
+        if not self._kwargs:
+            return self._dependency == other  # type:ignore
+        return False
 
     def __hash__(self) -> int:
         if not self._kwargs:

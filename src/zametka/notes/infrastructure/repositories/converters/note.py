@@ -1,8 +1,10 @@
-from typing import Sequence, Optional
+from collections.abc import Sequence
 
 from sqlalchemy import Row
 
-from zametka.notes.domain.entities.note import Note as NoteEntity, DBNote
+from zametka.notes.application.note.dto import DBNoteDTO, ListNoteDTO
+from zametka.notes.domain.entities.note import DBNote
+from zametka.notes.domain.entities.note import Note as NoteEntity
 from zametka.notes.domain.value_objects.note.note_created_at import (
     NoteCreatedAt,
 )
@@ -12,11 +14,9 @@ from zametka.notes.domain.value_objects.note.note_title import NoteTitle
 from zametka.notes.domain.value_objects.user.user_id import UserId
 from zametka.notes.infrastructure.db.models.note import Note
 
-from zametka.notes.application.note.dto import DBNoteDTO, ListNoteDTO
-
 
 def note_db_data_to_db_note_dto(
-    note: tuple[int, str, Optional[str]],
+    note: tuple[int, str, str | None],
 ) -> DBNoteDTO:
     return DBNoteDTO(
         note_id=note[0],

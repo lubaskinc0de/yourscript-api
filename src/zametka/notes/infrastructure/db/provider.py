@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from zametka.notes.infrastructure.repositories.note import NoteRepositoryImpl
 from zametka.notes.infrastructure.db.uow import SAUnitOfWork
+from zametka.notes.infrastructure.repositories.note import NoteRepositoryImpl
 from zametka.notes.infrastructure.repositories.user import UserRepositoryImpl
 
 

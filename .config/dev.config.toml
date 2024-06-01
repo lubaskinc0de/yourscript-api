@@ -1,9 +1,8 @@
-[external]
-frontend-url = 'http://localhost:5173'
+[web]
+cors-allow = ['http://localhost:5173']
 
 [email]
 activation-mail-subject = 'ЗАВЕРШИТЕ РЕГИСТРАЦИЮ В ZAMETKA'
-activation-url-template = '{frontend_url}/verify?token={token}'
 activation-email-template-path = 'zametka.access_service.presentation.http'
 activation-email-template-name = 'confirmation-mail.html'
 

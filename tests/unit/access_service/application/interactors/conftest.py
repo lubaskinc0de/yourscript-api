@@ -1,13 +1,11 @@
 import pytest
+from zametka.access_service.domain.entities.user import User
 
 from tests.mocks.access_service.event_emitter import FakeEventEmitter
 from tests.mocks.access_service.id_provider import FakeIdProvider
 from tests.mocks.access_service.token_sender import FakeTokenSender
 from tests.mocks.access_service.uow import FakeUoW
 from tests.mocks.access_service.user_gateway import FakeUserGateway
-
-
-from zametka.access_service.domain.entities.user import User
 
 
 @pytest.fixture

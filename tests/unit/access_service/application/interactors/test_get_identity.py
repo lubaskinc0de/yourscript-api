@@ -1,15 +1,14 @@
 import pytest
+from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.application.get_user import (
+    GetUser,
+)
+from zametka.access_service.domain.exceptions.user import UserIsNotActiveError
 
 from tests.mocks.access_service.id_provider import FakeIdProvider
 from tests.mocks.access_service.user_gateway import (
     FakeUserGateway,
 )
-
-from zametka.access_service.application.get_user import (
-    GetUser,
-)
-from zametka.access_service.application.dto import UserDTO
-from zametka.access_service.domain.exceptions.user import UserIsNotActiveError
 
 
 @pytest.mark.access
@@ -39,7 +38,6 @@ async def test_get_identity(
         result = await coro
         assert result is not None
         assert isinstance(result, UserDTO) is True
-        print(id_provider.user.user_id.__eq__(result.user_id))
         assert result.user_id == id_provider.user.user_id
         assert id_provider.requested is True
     else:

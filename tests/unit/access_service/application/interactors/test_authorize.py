@@ -1,25 +1,25 @@
 import pytest
-
-from tests.mocks.access_service.user_gateway import (
-    FakeUserGateway,
-)
-
 from zametka.access_service.application.authorize import (
     Authorize,
     AuthorizeInputDTO,
 )
-from zametka.access_service.application.dto import AccessTokenDTO
-from zametka.access_service.domain.entities.config import AccessTokenConfig
-
-from zametka.access_service.domain.exceptions.user import (
-    UserIsNotActiveError,
+from zametka.access_service.application.common.exceptions.user import (
     UserIsNotExistsError,
-    InvalidCredentialsError,
 )
+from zametka.access_service.application.dto import AccessTokenDTO
 from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
+from zametka.access_service.domain.entities.config import AccessTokenConfig
+from zametka.access_service.domain.exceptions.user import (
+    InvalidCredentialsError,
+    UserIsNotActiveError,
+)
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
+)
+
+from tests.mocks.access_service.user_gateway import (
+    FakeUserGateway,
 )
 
 

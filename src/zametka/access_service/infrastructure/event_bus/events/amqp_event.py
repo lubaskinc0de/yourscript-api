@@ -1,6 +1,6 @@
-from typing import Callable, ClassVar, TypeVar, Generic, Any
-
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any, ClassVar, Generic, TypeVar
 
 from zametka.access_service.application.common.event import EventT
 from zametka.access_service.infrastructure.event_bus.events.integration_event import (

@@ -1,8 +1,16 @@
 import re
-from dataclasses import dataclass
 
 from zametka.access_service.domain.common.value_objects.base import ValueObject
 from zametka.access_service.domain.exceptions.user import WeakPasswordError
+
+
+def has_special_symbols(string: str) -> bool:
+    regex = re.compile("[@_!#$%^&*()<>?/}{~:]")
+
+    if re.search(regex, string) is None:
+        return False
+
+    return True
 
 
 class UserRawPassword(ValueObject[str]):
@@ -10,8 +18,6 @@ class UserRawPassword(ValueObject[str]):
 
     def _validate(self) -> None:
         """Validate password"""
-
-        special_symbols_regex = re.compile("[@_!#$%^&*()<>?/}{~:]")
 
         error_messages = {
             "Пароль должен содержать заглавную букву.": lambda s: any(
@@ -24,12 +30,10 @@ class UserRawPassword(ValueObject[str]):
             "Пароль не должен содержать пробелы.": lambda s: not any(
                 x.isspace() for x in s
             ),
-            "Пароль должен содержать в себе специальный символ (@, #, $, %)": lambda s: re.search(
-                special_symbols_regex, s
-            )
-            is not None,
+            "Пароль должен содержать в себе специальный \
+            символ (@, #, $, %)": has_special_symbols,
         }
 
         for message, password_validator in error_messages.items():
-            if not password_validator(self.value):  # type:ignore
+            if not password_validator(self.value):
                 raise WeakPasswordError(message)

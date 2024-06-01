@@ -1,9 +1,6 @@
 from zametka.access_service.domain.exceptions.base import DomainError
 
 
-class UserIsNotExistsError(DomainError): ...
-
-
 class UserIsNotActiveError(DomainError): ...
 
 

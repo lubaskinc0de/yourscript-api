@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from zametka.access_service.domain.common.value_objects.base import ValueObject
 
@@ -9,7 +8,7 @@ class ExpiresIn(ValueObject[datetime]):
 
     @property
     def is_expired(self) -> bool:
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
 
         if now > self.value:
             return True

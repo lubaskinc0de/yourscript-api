@@ -1,16 +1,20 @@
 import pytest
-
-from tests.mocks.access_service.user_gateway import (
-    FakeUserGateway,
+from zametka.access_service.application.common.exceptions.user import (
+    UserIsNotExistsError,
 )
-from tests.mocks.access_service.uow import FakeUoW
 from zametka.access_service.application.dto import UserConfirmationTokenDTO
-
 from zametka.access_service.application.verify_email import VerifyEmail
+from zametka.access_service.domain.entities.confirmation_token import (
+    UserConfirmationToken,
+)
 from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenIsExpiredError,
 )
-from zametka.access_service.domain.exceptions.user import UserIsNotExistsError
+
+from tests.mocks.access_service.uow import FakeUoW
+from tests.mocks.access_service.user_gateway import (
+    FakeUserGateway,
+)
 
 
 @pytest.mark.access
@@ -36,11 +40,12 @@ async def test_verify_email(
         user_saver=user_gateway,
     )
 
-    token = request.getfixturevalue(token_fixture_name)
+    token: UserConfirmationToken = request.getfixturevalue(token_fixture_name)
 
     dto = UserConfirmationTokenDTO(
         uid=token.uid.to_raw(),
         expires_in=token.expires_in.to_raw(),
+        token_id=token.token_id.to_raw(),
     )
 
     coro = interactor(dto)

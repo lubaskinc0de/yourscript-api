@@ -1,26 +1,22 @@
-from typing import Optional
 
+from zametka.notes.application.common.id_provider import IdProvider
 from zametka.notes.application.common.repository import NoteRepository
 from zametka.notes.application.common.uow import UoW
-from zametka.notes.application.common.id_provider import IdProvider
-
-from zametka.notes.domain.entities.note import Note, DBNote
+from zametka.notes.application.note.dto import (
+    CreateNoteInputDTO,
+    DBNoteDTO,
+    DeleteNoteInputDTO,
+    ListNotesDTO,
+    ListNotesInputDTO,
+    ReadNoteInputDTO,
+    UpdateNoteInputDTO,
+)
+from zametka.notes.domain.entities.note import DBNote, Note
 from zametka.notes.domain.exceptions.note import (
     NoteAccessDeniedError,
     NoteNotExistsError,
 )
-
 from zametka.notes.domain.value_objects.note.note_id import NoteId
-
-from zametka.notes.application.note.dto import (
-    CreateNoteInputDTO,
-    DeleteNoteInputDTO,
-    ReadNoteInputDTO,
-    ListNotesInputDTO,
-    ListNotesDTO,
-    UpdateNoteInputDTO,
-    DBNoteDTO,
-)
 from zametka.notes.domain.value_objects.note.note_text import NoteText
 from zametka.notes.domain.value_objects.note.note_title import NoteTitle
 from zametka.notes.domain.value_objects.user.user_id import UserId
@@ -40,7 +36,7 @@ class NoteInteractor:
     async def _check_exists(self, note_id: NoteId) -> DBNote:
         """Raises NoteNotExists if note with given id is not exists"""
 
-        note: Optional[DBNote] = await self.note_repository.get(note_id)
+        note: DBNote | None = await self.note_repository.get(note_id)
 
         if not note:
             raise NoteNotExistsError()
@@ -98,7 +94,7 @@ class NoteInteractor:
         updated_note: DBNote = note.merge(new_note)
 
         updated_db_note = await self.note_repository.update(
-            NoteId(data.note_id), updated_note
+            NoteId(data.note_id), updated_note,
         )
 
         if not updated_db_note:

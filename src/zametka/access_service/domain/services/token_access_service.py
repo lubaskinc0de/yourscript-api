@@ -2,8 +2,8 @@ from zametka.access_service.domain.common.services.access_service import AccessS
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.access_token import (
-    UnauthorizedError,
     AccessTokenIsExpiredError,
+    UnauthorizedError,
 )
 from zametka.access_service.domain.exceptions.user import UserIsNotActiveError
 

@@ -1,5 +1,5 @@
-from typing import Final
 from types import MappingProxyType
+from typing import Final
 
 from zametka.access_service.infrastructure.error_code import ErrorCode
 
@@ -15,5 +15,6 @@ HTTP_ERROR_CODE: Final[MappingProxyType[ErrorCode, int]] = MappingProxyType(
         ErrorCode.CONFIRMATION_TOKEN_EXPIRED: 408,
         ErrorCode.CONFIRMATION_TOKEN_ALREADY_USED: 409,
         ErrorCode.CORRUPTED_CONFIRMATION_TOKEN: 400,
-    }
+        ErrorCode.USER_EMAIL_ALREADY_EXISTS: 409,
+    },
 )

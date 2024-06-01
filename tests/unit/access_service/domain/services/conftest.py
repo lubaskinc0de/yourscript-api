@@ -1,11 +1,12 @@
-from datetime import timedelta
+from uuid import uuid4
 
 import pytest
-
 from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedTokenMetadata,
 )
-
+from zametka.access_service.domain.common.value_objects.timed_token_id import (
+    TimedTokenId,
+)
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.services.token_access_service import (
@@ -17,25 +18,28 @@ from zametka.access_service.domain.value_objects.expires_in import ExpiresIn
 @pytest.fixture
 def access_token(
     user: User,
-    confirmation_token_expires_in: ExpiresIn,
+    token_expires_in: ExpiresIn,
 ) -> AccessToken:
     metadata = TimedTokenMetadata(
-        uid=user.user_id, expires_in=confirmation_token_expires_in
+        uid=user.user_id,
+        expires_in=token_expires_in,
     )
-    return AccessToken(metadata)
+    token_id = TimedTokenId(uuid4())
+    return AccessToken(metadata, token_id)
 
 
 @pytest.fixture
 def expired_access_token(
-    user: User, confirmation_token_expires_in: ExpiresIn
+    user: User,
+    token_expired_in: ExpiresIn,
 ) -> AccessToken:
     metadata = TimedTokenMetadata(
         uid=user.user_id,
-        expires_in=ExpiresIn(
-            confirmation_token_expires_in.to_raw() - timedelta(days=1)
-        ),
+        expires_in=token_expired_in,
     )
-    token = AccessToken(metadata)
+
+    token_id = TimedTokenId(uuid4())
+    token = AccessToken(metadata, token_id=token_id)
 
     return token
 

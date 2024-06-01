@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from email.message import Message
-from typing import Protocol, Any
+from typing import Any, Protocol
 
 
 class EmailClient(Protocol):

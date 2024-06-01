@@ -1,14 +1,13 @@
 from zametka.access_service.application.common.event import (
     EventHandler,
 )
-
 from zametka.access_service.application.dto import UserDeletedEvent
 from zametka.access_service.infrastructure.event_bus.amqp_event_sender import (
     AMQPEventSender,
 )
 from zametka.access_service.infrastructure.event_bus.events import (
-    UserDeletedAMQPEvent,
     AMQPEvent,
+    UserDeletedAMQPEvent,
 )
 
 

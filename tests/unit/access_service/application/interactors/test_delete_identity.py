@@ -1,23 +1,22 @@
 import pytest
+from zametka.access_service.application.delete_user import (
+    DeleteUser,
+    DeleteUserInputDTO,
+)
+from zametka.access_service.application.dto import UserDeletedEvent
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
+from zametka.access_service.domain.exceptions.user import (
+    InvalidCredentialsError,
+    UserIsNotActiveError,
+)
+from zametka.access_service.domain.value_objects.user_raw_password import (
+    UserRawPassword,
+)
 
 from tests.mocks.access_service.event_emitter import FakeEventEmitter
 from tests.mocks.access_service.id_provider import FakeIdProvider
 from tests.mocks.access_service.user_gateway import (
     FakeUserGateway,
-)
-from zametka.access_service.application.delete_user import (
-    DeleteUser,
-    DeleteUserInputDTO,
-)
-
-from zametka.access_service.application.dto import UserDeletedEvent
-from zametka.access_service.domain.exceptions.user import (
-    UserIsNotActiveError,
-    InvalidCredentialsError,
-)
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
-from zametka.access_service.domain.value_objects.user_raw_password import (
-    UserRawPassword,
 )
 
 
@@ -53,7 +52,7 @@ async def test_delete_identity(
     coro = interactor(
         DeleteUserInputDTO(
             password=password_startswith + user_password.to_raw(),
-        )
+        ),
     )
 
     if exc_class:

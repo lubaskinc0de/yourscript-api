@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 from zametka.access_service.domain.common.entities.timed_user_token import (
     TimedUserToken,
 )
@@ -12,4 +10,3 @@ class UserConfirmationToken(TimedUserToken):
     def verify(self) -> None:
         if self.expires_in.is_expired:
             raise ConfirmationTokenIsExpiredError
-        return None

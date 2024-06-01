@@ -1,6 +1,5 @@
 from abc import ABC
-
-from typing import TypeVar, Union
+from typing import TypeVar
 
 
 class Event(ABC):
@@ -9,4 +8,4 @@ class Event(ABC):
 
 
 EventT = TypeVar("EventT", bound=Event)  # e.g Event1
-EventsT = TypeVar("EventsT", bound=Union[Event])  # e.g Event1 | Event 2
+EventsT = TypeVar("EventsT", bound=Event)  # e.g Event1 | Event 2

@@ -1,17 +1,15 @@
 import argon2
-
 from aiosmtplib import SMTP
 from dishka import (
+    AnyOf,
+    AsyncContainer,
     Provider,
     Scope,
-    AsyncContainer,
+    from_context,
     make_async_container,
     provide,
-    from_context,
-    AnyOf,
 )
 from fastapi import Request
-
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from zametka.access_service.application.authorize import Authorize
@@ -19,34 +17,37 @@ from zametka.access_service.application.common.event import EventEmitter
 from zametka.access_service.application.common.id_provider import (
     IdProvider,
 )
+from zametka.access_service.application.common.token_sender import TokenSender
+from zametka.access_service.application.common.uow import UoW
 from zametka.access_service.application.common.user_gateway import (
     UserReader,
     UserSaver,
 )
-from zametka.access_service.application.common.token_sender import TokenSender
-from zametka.access_service.application.common.uow import UoW
 from zametka.access_service.application.create_user import CreateUser
 from zametka.access_service.application.delete_user import DeleteUser
 from zametka.access_service.application.get_user import GetUser
 from zametka.access_service.application.verify_email import VerifyEmail
+from zametka.access_service.bootstrap.conf import (
+    load_all_config,
+)
 from zametka.access_service.domain.common.services.access_service import AccessService
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.entities.access_token import AccessToken
 from zametka.access_service.domain.entities.config import (
     AccessTokenConfig,
     UserConfirmationTokenConfig,
 )
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
-from zametka.access_service.infrastructure.auth.password_hasher import (
-    ArgonPasswordHasher,
-)
 from zametka.access_service.domain.services.token_access_service import (
     TokenAccessService,
+)
+from zametka.access_service.infrastructure.auth.password_hasher import (
+    ArgonPasswordHasher,
 )
 from zametka.access_service.infrastructure.email.aio_email_client import (
     AioSMTPEmailClient,
 )
 from zametka.access_service.infrastructure.email.config import (
-    ActivationEmailConfig,
+    ConfirmationEmailConfig,
     SMTPConfig,
 )
 from zametka.access_service.infrastructure.email.email_token_sender import (
@@ -55,7 +56,7 @@ from zametka.access_service.infrastructure.email.email_token_sender import (
 from zametka.access_service.infrastructure.event_bus.event_emitter import (
     EventEmitterImpl,
 )
-
+from zametka.access_service.infrastructure.gateway.user import UserGatewayImpl
 from zametka.access_service.infrastructure.id_provider import (
     TokenIdProvider,
 )
@@ -67,28 +68,22 @@ from zametka.access_service.infrastructure.jwt.confirmation_token_processor impo
     ConfirmationTokenProcessor,
 )
 from zametka.access_service.infrastructure.jwt.jwt_processor import (
-    PyJWTProcessor,
     JWTProcessor,
+    PyJWTProcessor,
 )
 from zametka.access_service.infrastructure.message_broker.config import (
     AMQPConfig,
 )
 from zametka.access_service.infrastructure.persistence.config import DBConfig
-
 from zametka.access_service.infrastructure.persistence.provider import (
     get_async_session,
-    get_engine,
     get_async_sessionmaker,
+    get_engine,
 )
 from zametka.access_service.infrastructure.persistence.uow import SAUnitOfWork
-from zametka.access_service.infrastructure.gateway.user import UserGatewayImpl
-
-from zametka.access_service.bootstrap.conf import (
-    load_all_config,
-)
 from zametka.access_service.presentation.error_message import ErrorMessage
-from zametka.access_service.presentation.http.jwt.config import TokenAuthConfig
-from zametka.access_service.presentation.http.jwt.token_auth import TokenAuth
+from zametka.access_service.presentation.http.auth.config import TokenAuthConfig
+from zametka.access_service.presentation.http.auth.token_auth import TokenAuth
 
 
 def gateway_provider() -> Provider:
@@ -166,11 +161,15 @@ def config_provider() -> Provider:
     provider.provide(lambda: config.smtp, scope=Scope.APP, provides=SMTPConfig)
     provider.provide(lambda: config.amqp, scope=Scope.APP, provides=AMQPConfig)
     provider.provide(
-        lambda: config.email, scope=Scope.APP, provides=ActivationEmailConfig
+        lambda: config.email,
+        scope=Scope.APP,
+        provides=ConfirmationEmailConfig,
     )
     provider.provide(lambda: config.jwt, scope=Scope.APP, provides=JWTConfig)
     provider.provide(
-        lambda: config.token_auth, scope=Scope.APP, provides=TokenAuthConfig
+        lambda: config.token_auth,
+        scope=Scope.APP,
+        provides=TokenAuthConfig,
     )
     provider.provide(
         lambda: config.access_token,
@@ -229,7 +228,7 @@ class HTTPProvider(Provider):
     def get_token_sender(
         self,
         config: SMTPConfig,
-        email_config: ActivationEmailConfig,
+        email_config: ConfirmationEmailConfig,
         token_processor: ConfirmationTokenProcessor,
     ) -> TokenSender:
         jinja_env: Environment = Environment(
@@ -243,7 +242,7 @@ class HTTPProvider(Provider):
                 username=config.user,
                 password=config.password,
                 use_tls=config.use_tls,
-            )
+            ),
         )
         token_sender = EmailTokenSender(
             email_client,

@@ -1,5 +1,5 @@
-from .integration_event import IntegrationEvent
 from .amqp_event import AMQPEvent
+from .integration_event import IntegrationEvent
 from .user import UserDeletedAMQPEvent
 
 __all__ = [

@@ -1,18 +1,16 @@
-from typing import Optional
 
 from fastapi import APIRouter, Depends
 
+from zametka.notes.application.common.id_provider import IdProvider
 from zametka.notes.application.note.dto import (
     CreateNoteInputDTO,
-    DeleteNoteInputDTO,
-    ReadNoteInputDTO,
-    ListNotesInputDTO,
-    UpdateNoteInputDTO,
     DBNoteDTO,
+    DeleteNoteInputDTO,
     ListNotesDTO,
+    ListNotesInputDTO,
+    ReadNoteInputDTO,
+    UpdateNoteInputDTO,
 )
-
-from zametka.notes.application.common.id_provider import IdProvider
 from zametka.notes.presentation.interactor_factory import InteractorFactory
 from zametka.notes.presentation.web_api.schemas.note import NoteSchema
 
@@ -34,7 +32,7 @@ async def create(
             CreateNoteInputDTO(
                 text=note.text,
                 title=note.title,
-            )
+            ),
         )
 
         return response
@@ -50,7 +48,7 @@ async def read(
         response = await interactor(
             ReadNoteInputDTO(
                 note_id=note_id,
-            )
+            ),
         )
 
         return response
@@ -69,7 +67,7 @@ async def update(
                 note_id=note_id,
                 title=new_note.title,
                 text=new_note.text,
-            )
+            ),
         )
 
         return response
@@ -79,7 +77,7 @@ async def update(
 async def list_notes(
     limit: int,
     offset: int,
-    search: Optional[str] = None,
+    search: str | None = None,
     ioc: InteractorFactory = Depends(),
     id_provider: IdProvider = Depends(),
 ) -> ListNotesDTO:
@@ -92,7 +90,7 @@ async def list_notes(
                 limit=limit,
                 offset=offset,
                 search=search,
-            )
+            ),
         )
 
         return response
@@ -108,5 +106,5 @@ async def delete(
         await interactor(
             DeleteNoteInputDTO(
                 note_id=note_id,
-            )
+            ),
         )

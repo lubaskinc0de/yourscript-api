@@ -3,13 +3,13 @@ from fastapi.responses import JSONResponse
 
 from zametka.notes.domain.exceptions.note import (
     NoteAccessDeniedError,
-    NoteNotExistsError,
     NoteDataError,
+    NoteNotExistsError,
 )
 
 
 async def note_access_denied_exception_handler(
-    _request: Request, _exc: NoteAccessDeniedError
+    _request: Request, _exc: NoteAccessDeniedError,
 ) -> JSONResponse:
     return JSONResponse(
         status_code=403,
@@ -18,7 +18,7 @@ async def note_access_denied_exception_handler(
 
 
 async def note_not_exists_exception_handler(
-    _request: Request, _exc: NoteNotExistsError
+    _request: Request, _exc: NoteNotExistsError,
 ) -> JSONResponse:
     return JSONResponse(
         status_code=404,
@@ -27,6 +27,6 @@ async def note_not_exists_exception_handler(
 
 
 async def note_data_exception_handler(
-    _request: Request, exc: NoteDataError
+    _request: Request, exc: NoteDataError,
 ) -> JSONResponse:
     return JSONResponse(status_code=422, content={"detail": exc.message})

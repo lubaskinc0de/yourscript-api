@@ -1,9 +1,9 @@
 import json
 import logging
-import aio_pika
-
-from aio_pika.abc import AbstractChannel
 from typing import Protocol
+
+import aio_pika
+from aio_pika.abc import AbstractChannel
 
 from .message import Message
 
@@ -31,10 +31,13 @@ class RMQMessageBroker(MessageBroker):
         routing_key: str,
         exchange_name: str,
     ) -> None:
+        body = {
+            "message_type": message.message_type,
+            "data": message.data,
+        }
+
         rq_message = aio_pika.Message(
-            body=json.dumps(
-                dict(message_type=message.message_type, data=message.data)
-            ).encode(),
+            body=json.dumps(body).encode(),
             message_id=str(message.message_id),
             content_type="application/json",
             delivery_mode=aio_pika.DeliveryMode.PERSISTENT,

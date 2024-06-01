@@ -1,6 +1,6 @@
+from zametka.notes.application.user.dto import UserDTO
 from zametka.notes.domain.entities.user import User as UserEntity
 from zametka.notes.infrastructure.db.models.user import User
-from zametka.notes.application.user.dto import UserDTO
 
 
 def user_db_model_to_user_dto(user: User) -> UserDTO:

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-
-from typing import AsyncContextManager, Awaitable, Callable, TypeAlias, TypeVar
+from collections.abc import Awaitable, Callable
+from typing import AsyncContextManager, TypeAlias, TypeVar
 
 from zametka.notes.application.common.id_provider import IdProvider
 from zametka.notes.application.note.note_interactor import NoteInteractor
@@ -13,7 +13,7 @@ GOutputDTO = TypeVar("GOutputDTO")
 
 InteractorCallable: TypeAlias = Callable[[GInputDTO], Awaitable[GOutputDTO]]
 InteractorPicker: TypeAlias = Callable[
-    [NoteInteractor], InteractorCallable[GInputDTO, GOutputDTO]
+    [NoteInteractor], InteractorCallable[GInputDTO, GOutputDTO],
 ]
 
 

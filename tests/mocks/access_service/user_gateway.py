@@ -1,5 +1,3 @@
-from typing import Optional
-
 from zametka.access_service.application.common.user_gateway import (
     UserReader,
     UserSaver,
@@ -27,14 +25,14 @@ class FakeUserGateway(UserReader, UserSaver):
             user_id=self.user.user_id.to_raw(),
         )
 
-    async def with_id(self, user_id: UserId) -> Optional[User]:
-        if not self.user.user_id == user_id:
+    async def with_id(self, user_id: UserId) -> User | None:
+        if self.user.user_id != user_id:
             return None
 
         return self.user
 
-    async def with_email(self, email: UserEmail) -> Optional[User]:
-        if not self.user.email == email:
+    async def with_email(self, email: UserEmail) -> User | None:
+        if self.user.email != email:
             return None
 
         return self.user

@@ -2,7 +2,7 @@ from dishka import AsyncContainer
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from zametka.access_service.domain.common.app_error import AppError
+from zametka.access_service.domain.common.base_error import BaseError
 from zametka.access_service.infrastructure.error_code import ErrorCode
 from zametka.access_service.presentation.error_message import ErrorMessage
 from zametka.access_service.presentation.http.http_error_code import (
@@ -10,7 +10,10 @@ from zametka.access_service.presentation.http.http_error_code import (
 )
 
 
-def get_http_error_response(err: AppError, error_message: ErrorMessage) -> JSONResponse:
+def get_http_error_response(
+    err: BaseError,
+    error_message: ErrorMessage,
+) -> JSONResponse:
     err_type = type(err)
     err_code = ErrorCode(err_type)
     err_message = error_message.get_error_message(err_code)
@@ -26,8 +29,8 @@ def get_http_error_response(err: AppError, error_message: ErrorMessage) -> JSONR
 
 
 async def app_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    if not isinstance(exc, AppError):
-        ...  # TODO: handle unknown exc
+    if not isinstance(exc, BaseError):
+        # TODO: handle unknown exc
         return JSONResponse(status_code=500, content={})
 
     di_container: AsyncContainer = request.state.dishka_container

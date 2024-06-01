@@ -1,6 +1,5 @@
 import logging
-
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -35,7 +34,7 @@ async def get_async_sessionmaker(
     """Get async SA sessionmaker"""
 
     session_factory = async_sessionmaker(
-        engine, expire_on_commit=False, class_=AsyncSession
+        engine, expire_on_commit=False, class_=AsyncSession,
     )
 
     logging.info("Session provider was initialized")

@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
 class NoteDTO:
     title: str
-    text: Optional[str]
+    text: str | None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -22,14 +21,14 @@ class ListNoteDTO:
 @dataclass(frozen=True)
 class CreateNoteInputDTO:
     title: str
-    text: Optional[str] = None
+    text: str | None = None
 
 
 @dataclass(frozen=True)
 class UpdateNoteInputDTO:
     note_id: int
     title: str
-    text: Optional[str] = None
+    text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -41,7 +40,7 @@ class ReadNoteInputDTO:
 class ListNotesInputDTO:
     limit: int
     offset: int
-    search: Optional[str] = None
+    search: str | None = None
 
 
 @dataclass(frozen=True)

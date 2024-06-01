@@ -3,13 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from zametka.notes.application.common.id_provider import IdProvider
+from zametka.notes.application.user.create_user import CreateUserInputDTO
+from zametka.notes.application.user.dto import UserDTO
+from zametka.notes.presentation.interactor_factory import InteractorFactory
 from zametka.notes.presentation.web_api.dependencies.id_provider import (
     get_raw_id_provider,
 )
 from zametka.notes.presentation.web_api.schemas.user import UserSchema
-from zametka.notes.application.user.dto import UserDTO
-from zametka.notes.application.user.create_user import CreateUserInputDTO
-from zametka.notes.presentation.interactor_factory import InteractorFactory
 
 router = APIRouter(
     prefix="/users",
@@ -29,7 +29,7 @@ async def create_user(
             CreateUserInputDTO(
                 first_name=data.first_name,
                 last_name=data.last_name,
-            )
+            ),
         )
 
         return response

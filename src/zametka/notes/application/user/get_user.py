@@ -1,7 +1,7 @@
-from zametka.notes.application.user.dto import UserDTO
 from zametka.notes.application.common.id_provider import IdProvider
 from zametka.notes.application.common.interactor import Interactor
 from zametka.notes.application.common.repository import UserRepository
+from zametka.notes.application.user.dto import UserDTO
 from zametka.notes.domain.exceptions.user import UserIsNotExistsError
 
 

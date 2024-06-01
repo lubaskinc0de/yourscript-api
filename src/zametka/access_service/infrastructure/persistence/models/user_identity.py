@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Boolean, Uuid, String
+from sqlalchemy import Boolean, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from zametka.access_service.infrastructure.persistence.models.base import Base

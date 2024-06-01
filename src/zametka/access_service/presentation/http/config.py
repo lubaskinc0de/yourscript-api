@@ -29,7 +29,7 @@ def load_authjwt_config() -> AuthJWTConfig:
         authjwt_secret_key=os.environ["AUTHJWT_SECRET_KEY"],
         authjwt_token_location={"cookies"},
         authjwt_access_token_expires=timedelta(
-            minutes=int(os.environ["AUTHJWT_TOKEN_EXPIRES_MINUTES"])
+            minutes=int(os.environ["AUTHJWT_TOKEN_EXPIRES_MINUTES"]),
         ),
         authjwt_cookie_expires=int(os.environ["AUTHJWT_COOKIE_EXPIRES_SECONDS"]),
     )

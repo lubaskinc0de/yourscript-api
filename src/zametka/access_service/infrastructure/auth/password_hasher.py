@@ -1,9 +1,9 @@
 import argon2
 
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.exceptions.password_hasher import (
     PasswordMismatchError,
 )
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_hashed_password import (
     UserHashedPassword,
 )

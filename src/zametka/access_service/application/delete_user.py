@@ -8,7 +8,6 @@ from zametka.access_service.application.common.user_gateway import (
 )
 from zametka.access_service.application.dto import UserDeletedEvent
 from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
-
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
 )
@@ -43,5 +42,3 @@ class DeleteUser(Interactor[DeleteUserInputDTO, None]):
             user_id=user.user_id.to_raw(),
         )
         await self.event_emitter.emit(event)
-
-        return None

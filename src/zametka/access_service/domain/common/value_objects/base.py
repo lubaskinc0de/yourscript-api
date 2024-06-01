@@ -10,9 +10,7 @@ class BaseValueObject(ABC):
     def __post_init__(self) -> None:
         self._validate()
 
-    def _validate(self) -> None:
-        """This method checks that a value is valid to create this value object"""
-        pass
+    def _validate(self) -> None: ...
 
 
 @dataclass(frozen=True)
@@ -22,7 +20,7 @@ class ValueObject(BaseValueObject, ABC, Generic[V]):
     def to_raw(self) -> V:
         return self.value
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return self.value == other
         return self.value == other.value

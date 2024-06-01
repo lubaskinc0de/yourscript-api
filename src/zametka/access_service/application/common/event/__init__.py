@@ -1,4 +1,4 @@
-from .event import Event, EventT, EventsT
+from .event import Event, EventsT, EventT
 from .event_emitter import EventEmitter
 from .event_handler import EventHandler
 

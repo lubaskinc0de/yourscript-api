@@ -1,5 +1,4 @@
 import pytest
-
 from zametka.access_service.domain.exceptions.confirmation_token import (
     ConfirmationTokenIsExpiredError,
 )

@@ -1,15 +1,16 @@
+from abc import abstractmethod
+from typing import Any, Protocol, TypeAlias
+
 import jwt
 
-from typing import Protocol, TypeAlias, Any
-from abc import abstractmethod
-
 from zametka.access_service.infrastructure.jwt.config import JWTConfig
+from zametka.access_service.infrastructure.jwt.exceptions import (
+    JWTDecodeError,
+    JWTExpiredError,
+)
 
 JWTPayload: TypeAlias = dict[str, Any]
 JWTToken: TypeAlias = str
-
-
-class JWTDecodeError(Exception): ...
 
 
 class JWTProcessor(Protocol):
@@ -30,6 +31,8 @@ class PyJWTProcessor(JWTProcessor):
 
     def decode(self, token: JWTToken) -> JWTPayload:
         try:
-            return jwt.decode(token, self.key, algorithms=[self.algorithm])  # type:ignore
+            return jwt.decode(token, self.key, algorithms=[self.algorithm])
+        except jwt.ExpiredSignatureError as exc:
+            raise JWTExpiredError from exc
         except jwt.DecodeError as exc:
             raise JWTDecodeError from exc

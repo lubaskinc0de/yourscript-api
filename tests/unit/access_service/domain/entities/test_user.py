@@ -1,20 +1,19 @@
 import pytest
-
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.entities.confirmation_token import (
     UserConfirmationToken,
 )
 from zametka.access_service.domain.entities.user import User
 from zametka.access_service.domain.exceptions.confirmation_token import (
-    CorruptedConfirmationTokenError,
     ConfirmationTokenAlreadyUsedError,
     ConfirmationTokenIsExpiredError,
+    CorruptedConfirmationTokenError,
 )
 from zametka.access_service.domain.exceptions.user import (
+    InvalidUserEmailError,
     UserIsNotActiveError,
     WeakPasswordError,
-    InvalidUserEmailError,
 )
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
@@ -24,7 +23,9 @@ from zametka.access_service.domain.value_objects.user_raw_password import (
 @pytest.mark.access
 @pytest.mark.domain
 def test_create_user(
-    user: User, password_hasher: PasswordHasher, user_password: UserRawPassword
+    user: User,
+    password_hasher: PasswordHasher,
+    user_password: UserRawPassword,
 ):
     user.authenticate(user_password, password_hasher)
 

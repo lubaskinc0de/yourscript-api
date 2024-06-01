@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, date
+from datetime import date, datetime
 
 from zametka.notes.domain.common.value_objects.base import ValueObject
 

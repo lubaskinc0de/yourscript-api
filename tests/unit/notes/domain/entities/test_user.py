@@ -1,9 +1,8 @@
 import datetime
-import pytest
-
 from uuid import uuid4
-from zametka.notes.domain.entities.user import User
 
+import pytest
+from zametka.notes.domain.entities.user import User
 from zametka.notes.domain.exceptions.user import (
     InvalidUserFirstNameError,
     InvalidUserLastNameError,
@@ -47,7 +46,7 @@ def test_create_user_bad_last_name(last_name):
 
 
 def test_read_joined_at():
-    joined_at = UserJoinedAt(datetime.datetime.now())
+    joined_at = UserJoinedAt(datetime.datetime.now(tz=datetime.UTC))
     assert isinstance(joined_at.read(), datetime.date)
 
 

@@ -11,9 +11,9 @@ class SMTPConfig:
 
 
 @dataclass
-class ActivationEmailConfig:
+class ConfirmationEmailConfig:
     subject: str
-    activation_url: str
+    confirmation_link: str
     email_from: str
     template_path: str
     template_name: str

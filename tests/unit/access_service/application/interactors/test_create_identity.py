@@ -1,23 +1,22 @@
 import pytest
-
-from tests.mocks.access_service.user_gateway import (
-    FakeUserGateway,
-)
-from tests.mocks.access_service.uow import FakeUoW
-from tests.mocks.access_service.token_sender import FakeTokenSender
-
 from zametka.access_service.application.create_user import (
     CreateUser,
     CreateUserInputDTO,
 )
 from zametka.access_service.application.dto import UserDTO
+from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.entities.config import (
     UserConfirmationTokenConfig,
 )
-from zametka.access_service.domain.common.services.password_hasher import PasswordHasher
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_raw_password import (
     UserRawPassword,
+)
+
+from tests.mocks.access_service.token_sender import FakeTokenSender
+from tests.mocks.access_service.uow import FakeUoW
+from tests.mocks.access_service.user_gateway import (
+    FakeUserGateway,
 )
 
 

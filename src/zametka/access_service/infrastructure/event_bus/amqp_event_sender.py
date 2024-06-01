@@ -1,12 +1,12 @@
 import logging
-
 from typing import Any
+
 from adaptix import Retort
 
 from zametka.access_service.infrastructure.event_bus.events import AMQPEvent
 from zametka.access_service.infrastructure.message_broker import (
-    MessageBroker,
     Message,
+    MessageBroker,
 )
 
 
@@ -25,7 +25,9 @@ class AMQPEventSender:
         )
 
         await self._message_broker.publish_message(
-            broker_message, event.routing_key, event.exchange_name
+            broker_message,
+            event.routing_key,
+            event.exchange_name,
         )
 
         logging.info("Event %s was published.", event)

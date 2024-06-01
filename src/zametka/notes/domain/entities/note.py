@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any
 
 from zametka.notes.domain.value_objects.note.note_created_at import (
     NoteCreatedAt,
@@ -24,8 +24,8 @@ class Note:
         self,
         title: NoteTitle,
         author_id: UserId,
-        text: Optional[NoteText] = None,
-        created_at: Optional[NoteCreatedAt] = None,
+        text: NoteText | None = None,
+        created_at: NoteCreatedAt | None = None,
     ) -> None:
         self.title = title
         self.author_id = author_id
@@ -58,8 +58,8 @@ class DBNote(Note):
         title: NoteTitle,
         author_id: UserId,
         note_id: NoteId,
-        text: Optional[NoteText] = None,
-        created_at: Optional[NoteCreatedAt] = None,
+        text: NoteText | None = None,
+        created_at: NoteCreatedAt | None = None,
     ) -> None:
         super().__init__(
             title=title,

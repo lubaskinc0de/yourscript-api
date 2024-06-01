@@ -8,8 +8,10 @@ from zametka.access_service.domain.exceptions.access_token import (
 )
 
 
+@dataclass(frozen=True)
 class AccessToken(TimedUserToken):
+    revoked: bool = False
+
     def verify(self) -> None:
-        if self.expires_in.is_expired:
+        if self.expires_in.is_expired or self.revoked:
             raise AccessTokenIsExpiredError
-        return None

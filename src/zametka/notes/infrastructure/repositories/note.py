@@ -1,21 +1,20 @@
-from typing import Optional
 
-from sqlalchemy import delete, select, update, func, text
+from sqlalchemy import delete, func, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from zametka.notes.application.common.repository import NoteRepository
-from zametka.notes.application.note.dto import ListNotesDTO, DBNoteDTO
-from zametka.notes.domain.entities.note import Note as NoteEntity, DBNote
+from zametka.notes.application.note.dto import DBNoteDTO, ListNotesDTO
+from zametka.notes.domain.entities.note import DBNote
+from zametka.notes.domain.entities.note import Note as NoteEntity
 from zametka.notes.domain.value_objects.note.note_id import NoteId
 from zametka.notes.domain.value_objects.user.user_id import UserId
-
 from zametka.notes.infrastructure.db.models.note import Note
 from zametka.notes.infrastructure.repositories.converters.note import (
-    notes_to_dto,
     note_db_data_to_db_note_dto,
     note_db_model_to_db_note_dto,
-    note_entity_to_db_model,
     note_db_model_to_db_note_entity,
+    note_entity_to_db_model,
+    notes_to_dto,
 )
 
 
@@ -40,14 +39,14 @@ class NoteRepositoryImpl(NoteRepository):
 
         return note_db_model_to_db_note_dto(db_note)
 
-    async def get(self, note_id: NoteId) -> Optional[DBNote]:
+    async def get(self, note_id: NoteId) -> DBNote | None:
         """Get by id"""
 
         q = select(Note).where(Note.note_id == note_id.to_raw())
 
         res = await self.session.execute(q)
 
-        note: Optional[Note] = res.scalar()
+        note: Note | None = res.scalar()
 
         if not note:
             return None
@@ -55,8 +54,8 @@ class NoteRepositoryImpl(NoteRepository):
         return note_db_model_to_db_note_entity(note)
 
     async def update(
-        self, note_id: NoteId, updated_note: DBNote
-    ) -> Optional[DBNoteDTO]:
+        self, note_id: NoteId, updated_note: DBNote,
+    ) -> DBNoteDTO | None:
         """Update"""
 
         q = (
@@ -75,7 +74,7 @@ class NoteRepositoryImpl(NoteRepository):
 
         res = await self.session.execute(q)
 
-        note: Optional[tuple[int, str, Optional[str]]] = res.first()  # type:ignore
+        note: tuple[int, str, str | None] | None = res.first()  # type:ignore
 
         if not note:
             return None
@@ -108,7 +107,7 @@ class NoteRepositoryImpl(NoteRepository):
         return ListNotesDTO(notes=notes, has_next=has_next)
 
     async def search(
-        self, query: str, limit: int, offset: int, author_id: UserId
+        self, query: str, limit: int, offset: int, author_id: UserId,
     ) -> ListNotesDTO:
         """FTS"""
 

@@ -14,12 +14,14 @@ class UserDTO:
 class AccessTokenDTO:
     uid: UUID
     expires_in: datetime
+    token_id: UUID
 
 
 @dataclass(frozen=True)
 class UserConfirmationTokenDTO:
     uid: UUID
     expires_in: datetime
+    token_id: UUID
 
 
 @dataclass(frozen=True)

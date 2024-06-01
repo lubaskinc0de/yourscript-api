@@ -1,5 +1,4 @@
 import re
-
 from dataclasses import dataclass
 
 from zametka.notes.domain.common.value_objects.base import ValueObject
@@ -22,5 +21,5 @@ class UserLastName(ValueObject[str]):
             raise InvalidUserLastNameError("Поле не может быть пустым!")
         if bool(re.search(r"\d", self.value)):
             raise InvalidUserLastNameError(
-                "Фамилия пользователя не может содержать цифр!"
+                "Фамилия пользователя не может содержать цифр!",
             )

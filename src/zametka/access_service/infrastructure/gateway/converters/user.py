@@ -1,20 +1,18 @@
-from adaptix.conversion import get_converter, link, coercer
 from adaptix import P
+from adaptix.conversion import coercer, get_converter, link
 
+from zametka.access_service.application.dto import UserDTO
 from zametka.access_service.domain.entities.user import (
     User,
 )
-
 from zametka.access_service.domain.value_objects.user_email import UserEmail
 from zametka.access_service.domain.value_objects.user_hashed_password import (
     UserHashedPassword,
 )
 from zametka.access_service.domain.value_objects.user_id import UserId
-
 from zametka.access_service.infrastructure.persistence.models.user_identity import (
     DBUser,
 )
-from zametka.access_service.application.dto import UserDTO
 
 convert_db_user_to_entity = get_converter(
     DBUser,
@@ -40,6 +38,6 @@ convert_user_entity_to_db_user = get_converter(
             P[User][".*"] & ~P[User].is_active,
             P[DBUser][".*"] & ~P[DBUser].is_active,
             lambda x: x.to_raw(),
-        )
+        ),
     ],
 )

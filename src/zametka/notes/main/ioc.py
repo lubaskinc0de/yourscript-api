@@ -1,5 +1,5 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -33,7 +33,7 @@ class IoC(InteractorFactory):
         self._user_service = UserService()
 
     def _construct_note_interactor(
-        self, session: AsyncSession, id_provider: IdProvider
+        self, session: AsyncSession, id_provider: IdProvider,
     ) -> NoteInteractor:
         note_repository = get_note_repository(session)
         uow = get_uow(session)

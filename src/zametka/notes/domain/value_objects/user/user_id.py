@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
 from dataclasses import dataclass
+from typing import Any
 from uuid import UUID
 
 from zametka.notes.domain.common.value_objects.base import ValueObject

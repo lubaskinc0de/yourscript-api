@@ -15,7 +15,7 @@ class NoteTitle(ValueObject[str]):
             raise InvalidNoteTitleError("Название заметки слишком длинное!")
         if not any(not x.isspace() for x in self.value):
             raise InvalidNoteTitleError(
-                "Название заметки не может состоять только из пробелов!"
+                "Название заметки не может состоять только из пробелов!",
             )
         if not self.value:
             raise InvalidNoteTitleError("Название заметки пусто!")

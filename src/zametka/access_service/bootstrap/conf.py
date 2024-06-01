@@ -1,9 +1,9 @@
 import logging
 import os
 import tomllib
-
 from dataclasses import dataclass
 from datetime import timedelta
+from pathlib import Path
 from typing import Any
 
 from zametka.access_service.domain.entities.config import (
@@ -11,19 +11,19 @@ from zametka.access_service.domain.entities.config import (
     UserConfirmationTokenConfig,
 )
 from zametka.access_service.infrastructure.email.config import (
+    ConfirmationEmailConfig,
     SMTPConfig,
-    ActivationEmailConfig,
 )
 from zametka.access_service.infrastructure.jwt.config import JWTConfig
 from zametka.access_service.infrastructure.message_broker.config import (
     AMQPConfig,
 )
 from zametka.access_service.infrastructure.persistence.config import DBConfig
-from zametka.access_service.presentation.http.jwt.config import TokenAuthConfig
+from zametka.access_service.presentation.http.auth.config import TokenAuthConfig
 
 
-def load_config_by_path(config_path: str) -> dict[str, Any]:
-    with open(config_path, "rb") as cfg:
+def load_config_by_path(config_path: Path) -> dict[str, Any]:
+    with config_path.open("rb") as cfg:
         return tomllib.load(cfg)
 
 
@@ -32,7 +32,7 @@ class AllConfig:
     db: DBConfig
     amqp: AMQPConfig
     smtp: SMTPConfig
-    email: ActivationEmailConfig
+    email: ConfirmationEmailConfig
     jwt: JWTConfig
     token_auth: TokenAuthConfig
     access_token: AccessTokenConfig
@@ -55,7 +55,7 @@ def load_all_config() -> AllConfig:
     )
 
     cfg_path = os.environ["CONFIG_PATH"]
-    cfg = load_config_by_path(cfg_path)
+    cfg = load_config_by_path(Path(cfg_path))
 
     try:
         email_subject = cfg["email"]["activation-mail-subject"]
@@ -78,10 +78,10 @@ def load_all_config() -> AllConfig:
         logging.fatal("On startup: Error reading config %s", cfg_path)
         raise
 
-    email = ActivationEmailConfig(
+    email = ConfirmationEmailConfig(
         email_from=os.environ["MAIL_FROM"],
         subject=email_subject,
-        activation_url=email_url,
+        confirmation_link=email_url,
         template_path=email_template_path,
         template_name=email_template_name,
     )
@@ -99,11 +99,11 @@ def load_all_config() -> AllConfig:
     token_auth = TokenAuthConfig(token_key=jwt_token_key)
 
     access_token = AccessTokenConfig(
-        expires_after=timedelta(minutes=access_token_expires_after)
+        expires_after=timedelta(minutes=access_token_expires_after),
     )
 
     confirmation_token = UserConfirmationTokenConfig(
-        expires_after=timedelta(minutes=confirmation_token_expires_after)
+        expires_after=timedelta(minutes=confirmation_token_expires_after),
     )
 
     logging.info("Config loaded.")

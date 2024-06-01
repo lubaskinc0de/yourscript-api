@@ -1,7 +1,7 @@
-from typing import Callable, Generic, Any
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import ClassVar, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 from uuid import UUID, uuid4
 
 from zametka.access_service.application.common.event import Event, EventT

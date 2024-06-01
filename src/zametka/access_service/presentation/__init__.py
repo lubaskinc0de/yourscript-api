@@ -2,12 +2,12 @@ import logging
 
 from fastapi import FastAPI
 
-from .http.endpoints import user
-
 from zametka.access_service.presentation.http.exception_handlers import (
     app_exception_handler,
 )
-from ..domain.common.app_error import AppError
+
+from ..domain.common.base_error import BaseError
+from .http.endpoints import user
 
 
 def include_routers(app: FastAPI) -> None:
@@ -16,7 +16,7 @@ def include_routers(app: FastAPI) -> None:
 
 
 def include_exception_handlers(app: FastAPI) -> None:
-    app.add_exception_handler(AppError, app_exception_handler)
+    app.add_exception_handler(BaseError, app_exception_handler)
     logging.info("Exception handlers was included.")
 
 
